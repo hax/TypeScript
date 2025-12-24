@@ -43,33 +43,30 @@ let map: Map<string, int> = new Map();
 - Add to `KeywordTypeSyntaxKind` union type
 - Ensure no conflicts with existing JavaScript/TypeScript identifiers
 
-#### 1.3 Type Compatibility Questions
-**Critical decisions needed:**
+#### 1.3 Type Compatibility Rules
+**Design decisions:**
 
-1. **Should `int` be assignable to `number`?**
+1. **`int` is assignable to `number`** (safe and expected)
    ```typescript
    let i: int = 42;
-   let n: number = i; // Should this be allowed?
+   let n: number = i; // Allowed - int is subset of number
    ```
-   - **Pros**: Matches mathematical subset relationship, easier migration
-   - **Cons**: Loses integer guarantee, may defeat purpose
 
-2. **Should `number` be assignable to `int`?**
+2. **`number` is assignable to `int` with warning**
    ```typescript
    let n: number = 3.14;
-   let i: int = n; // Should this be allowed?
+   let i: int = n; // Warning by default, can be configured as error
    ```
-   - **Pros**: Flexible for generic code
-   - **Cons**: Unsafe, requires runtime validation
+   - Allows migration of existing code
+   - CompilerOption to control behavior (warning/error)
+   - Prevents forcing developers to add inappropriate conversions
 
-3. **How should numeric literals be typed?**
+3. **Numeric literals maintain current behavior**
    ```typescript
-   let x = 42; // Should this be int, number, or 42?
+   let x = 42;      // Literal type 42 (current behavior)
+   const y = 42;    // Literal type 42 (current behavior)
+   let z: int = 42; // Explicit int annotation required
    ```
-   - **Options**:
-     - Keep current behavior (literal type `42`)
-     - Type as `int` if it's an integer literal
-     - Type as `number` for backwards compatibility
 
 ### 2. Type System Integration
 
@@ -99,23 +96,26 @@ IntLike = Int | IntLiteral
 Primitive = StringLike | NumberLike | BigIntLike | BooleanLike | ...
 ```
 
-#### 2.3 Type Inference
-**Key questions:**
+#### 2.3 Type Inference Rules
 
-1. **Literal inference:**
+1. **Literal inference** (maintains current behavior):
    ```typescript
-   const x = 42; // Infer as 42, int, or number?
-   let y = 42;   // Infer as int or number?
+   const x = 42; // Infers literal type 42
+   let y = 42;   // Infers number (not int)
    ```
 
 2. **Operation inference:**
    ```typescript
    function add(a: int, b: int) {
-       return a + b; // Infer return type as int or number?
+       return a + b; // Returns int
    }
    
    function divide(a: int, b: int) {
-       return a / b; // What if result is fractional?
+       return a / b; // Returns number (may be fractional)
+   }
+   
+   function mixed(a: int, b: number) {
+       return a + b; // Returns number (mixed types always produce number)
    }
    ```
 
@@ -150,26 +150,27 @@ Primitive = StringLike | NumberLike | BigIntLike | BooleanLike | ...
 3. **Type narrowing:**
    ```typescript
    function check(x: number) {
-       if (Number.isInteger(x)) {
-           // Can we narrow x to int here?
+       if (Number.isInteger(x) && x >= -2147483648 && x <= 2147483647) {
+           // x narrowed to int (int32 range check)
        }
    }
    ```
 
 4. **Built-in operations:**
-   - Array indexing (currently accepts `number`, should accept `int`)
-   - String indexing
-   - Tuple indexing
-   - Bitwise operations (should work with `int`)
+   - Array indexing: Changed to accept only `int` (passing `number` triggers warning/error)
+   - String indexing: Changed to accept only `int`
+   - Tuple indexing: Changed to accept only `int`
+   - Bitwise operations: **Required to use `int`** types
 
 #### 3.3 Emitter Changes (`emitter.ts`)
-**No runtime changes needed** - `int` types would be erased like all TypeScript types.
-- Emit as regular JavaScript numbers
-- No special runtime representation
+**Optional runtime enforcement** via compiler option:
+- Default: Emit as regular JavaScript numbers (type erased)
+- Optional: Emit as `value | 0` to enforce int32 conversion at runtime
+- CompilerOption to control emit behavior
 
 #### 3.4 Transformer Changes
 - Ensure type annotations are properly stripped
-- No behavioral changes in emitted code
+- Optional transformer for runtime int32 conversion
 
 ### 4. Standard Library Integration
 
@@ -186,26 +187,23 @@ interface Array<T> {
     // ... many more
 }
 
-// Math methods
+// Math methods - keep existing signatures (values outside int32 range)
 interface Math {
-    floor(x: number): int;   // Floor returns integer
-    ceil(x: number): int;
-    round(x: number): int;
-    trunc(x: number): int;
-    abs(x: int): int;        // Overload for int
+    floor(x: number): number;  // Not changed - result may exceed int32
+    ceil(x: number): number;
+    round(x: number): number;
+    trunc(x: number): number;
     abs(x: number): number;
-    min(...values: int[]): int;     // Overload
     min(...values: number[]): number;
-    max(...values: int[]): int;     // Overload
     max(...values: number[]): number;
     // ... etc
 }
 
-// Number methods
+// Number methods - not changed (no need for int overloads)
 interface Number {
-    toFixed(fractionDigits?: int): string;
-    toExponential(fractionDigits?: int): string;
-    toPrecision(precision?: int): string;
+    toFixed(fractionDigits?: number): string;
+    toExponential(fractionDigits?: number): string;
+    toPrecision(precision?: number): string;
 }
 
 // String methods
@@ -221,7 +219,7 @@ interface String {
 
 #### 4.2 Global Functions
 ```typescript
-declare function parseInt(string: string, radix?: int): int;
+declare function parseInt(string: string, radix?: int): number;  // radix is int, but returns number
 declare function parseFloat(string: string): number;
 // ... etc
 ```
@@ -234,24 +232,21 @@ declare function parseFloat(string: string): number;
 1. **`int` as identifier:**
    ```typescript
    // Existing code that uses 'int' as a variable name
-   let int = 42; // Would this break?
-   function int() {} // Would this break?
+   let int = 42; // Still allowed - int is contextual keyword
+   function int() {} // Still allowed
    ```
-   - **Solution**: Make `int` a contextual keyword (only keyword in type positions)
+   - **Solution**: `int` is a contextual keyword (only keyword in type positions)
 
 2. **Type inference changes:**
-   - If literals infer as `int`, could break generic code expecting `number`
-   - **Solution**: Keep literals as literal types, require explicit `int` annotation
+   - Literals maintain current behavior (no breaking changes)
+   - Explicit `int` annotation required
 
 3. **Library compatibility:**
-   - Existing type definitions wouldn't use `int`
-   - **Solution**: Gradual migration, `int` assignable to `number`
+   - Existing type definitions continue to work
+   - `int` is assignable to `number` (safe conversion)
 
 #### 5.2 Migration Strategy
-1. **Phase 1**: Introduce as opt-in (strict mode flag?)
-2. **Phase 2**: Update standard library with overloads
-3. **Phase 3**: Encourage community adoption
-4. **Phase 4**: Consider changing default literal inference (major version)
+All changes introduced at once - no phased approach needed.
 
 ### 6. Semantic Challenges
 
@@ -259,32 +254,29 @@ declare function parseFloat(string: string): number;
 ```typescript
 let a: int = 10;
 let b: int = 3;
-let c = a / b; // Should this be int (truncated) or error or number?
+let c = a / b; // Returns number (may be fractional)
 ```
 
-**Options:**
-- **Option A**: Division always produces `number`
-- **Option B**: Error if assigning division result to `int` without explicit conversion
-- **Option C**: Integer division truncates (like C/Java)
+**Design decision:** Division always produces `number` type.
 
 #### 6.2 Range Limitations
-JavaScript numbers are IEEE 754 doubles:
-- Safe integer range: -(2^53 - 1) to (2^53 - 1)
-- Should `int` enforce this range?
-- What about operations that overflow?
+`int` type represents int32 range:
+- Range: -2147483648 to 2147483647 (32-bit signed integer)
+- Operations that overflow are undefined behavior (UB)
+- No compile-time overflow checking
 
 ```typescript
-let max: int = Number.MAX_SAFE_INTEGER;
-let overflow: int = max + 1; // What happens here?
+let max: int = 2147483647;
+let overflow: int = max + 1; // Undefined behavior (UB)
 ```
 
 #### 6.3 Bitwise Operations
-Currently return `number`, should they return `int`?
+Bitwise operations **require `int`** and return `int`:
 ```typescript
 let a: int = 5;
 let b: int = 3;
-let c = a & b;  // int or number?
-let d = a << 2; // int or number?
+let c = a & b;  // Returns int
+let d = a << 2; // Returns int
 ```
 
 #### 6.4 Interaction with BigInt
@@ -292,10 +284,10 @@ let d = a << 2; // int or number?
 let i: int = 42;
 let b: bigint = 42n;
 
-// Should these be allowed?
-let x = i + b;  // Error? What type?
-let y: bigint = i;  // Allowed?
-let z: int = Number(b); // Allowed with explicit conversion?
+// Design decisions:
+let x = i + b;  // Not allowed - type error
+let y: bigint = i;  // Allowed - safe conversion
+let z: int = Number(b); // Allowed with explicit conversion
 ```
 
 ### 7. Testing Requirements
@@ -419,17 +411,13 @@ Need to add to `diagnosticMessages.json`:
 
 ### 12. Community and Ecosystem Impact
 
-#### 12.1 DefinitelyTyped
-- Need to coordinate with DefinitelyTyped maintainers
-- Strategy for updating thousands of type definitions
-
-#### 12.2 Third-Party Tools
+#### 12.1 Third-Party Tools
 - Linters (ESLint plugins)
 - Formatters (Prettier)
 - Bundlers and build tools
 - Testing frameworks
 
-#### 12.3 Learning Resources
+#### 12.2 Learning Resources
 - Need to update tutorials
 - Video courses need updates
 - Stack Overflow answers become outdated
@@ -451,114 +439,95 @@ function toInt(n: number): int {
 #### 13.2 Template Literal Types
 Could potentially use template literal types for certain constraints, but not suitable for int.
 
-#### 13.3 Wait for TC39 Proposal
-Let JavaScript add integer types at runtime first, then TypeScript follows.
 
-### 14. Open Questions
 
-1. **Should `int` support decimal notation?**
+### 14. Resolved Design Questions
+
+1. **`int` with decimal notation?**
    ```typescript
-   let x: int = 42.0; // Should this be allowed?
+   let x: int = 42.0; // Not allowed
    ```
 
-2. **How to handle parseInt/parseFloat?**
+2. **parseInt return type:**
    ```typescript
-   let x = parseInt("42"); // Already returns number, change to int?
+   let x = parseInt("42"); // Returns number (not int)
    ```
 
 3. **JSON serialization:**
    ```typescript
-   JSON.parse('{"count": 42}') // What type for count?
+   JSON.parse('{"count": 42}') // Current type inference unchanged
    ```
 
 4. **Type guards:**
    ```typescript
-   function isInt(x: any): x is int { ... } // How to implement?
+   function isInt(x: any): x is int {
+       return Number.isInteger(x) && x >= -2147483648 && x <= 2147483647;
+   }
    ```
 
 5. **Widening behavior:**
    ```typescript
-   let x = 42; // Literal type 42
-   let y: int = x; // Should 42 widen to int?
+   let x = 42; // Literal type 42 (no change from current behavior)
+   let y: int = x; // Literal 42 is assignable to int
    ```
 
-### 15. Implementation Phases
+### 15. Implementation Checklist
 
-#### Phase 1: Core Implementation (Estimated: 3-6 months)
+#### Core Implementation
 - [ ] Add `IntKeyword` to SyntaxKind
 - [ ] Update scanner to recognize `int`
-- [ ] Add `Int` to TypeFlags
+- [ ] Add `Int` to TypeFlags (int32 range)
 - [ ] Implement basic type checking
 - [ ] Update parser for int type nodes
 - [ ] Basic test coverage
 
-#### Phase 2: Type System Integration (Estimated: 2-4 months)
-- [ ] Define type compatibility rules
-- [ ] Implement type inference
-- [ ] Handle arithmetic operations
-- [ ] Update built-in type operations
+#### Type System Integration
+- [ ] Define type compatibility rules (int → number safe, number → int warning)
+- [ ] Implement type inference (operations, mixed types)
+- [ ] Handle arithmetic operations (int + int = int, int / int = number)
+- [ ] Update bitwise operations to require int
+- [ ] Update array/string indexing to accept int
 - [ ] Comprehensive test coverage
 
-#### Phase 3: Standard Library (Estimated: 2-3 months)
-- [ ] Update lib.d.ts
-- [ ] Add overloads for Array methods
-- [ ] Add overloads for Math methods
-- [ ] Add overloads for String methods
+#### Standard Library
+- [ ] Update Array index signatures to use int
+- [ ] Update String index signatures to use int
+- [ ] Update parseInt radix parameter to int
 - [ ] Test standard library integration
 
-#### Phase 4: Tooling and Polish (Estimated: 2-3 months)
+#### Compiler Options
+- [ ] Add option to control number → int behavior (warning/error)
+- [ ] Add option to emit runtime int32 conversion (`value | 0`)
+
+#### Tooling and Polish
 - [ ] Language service integration
 - [ ] Error messages and diagnostics
 - [ ] Performance optimization
 - [ ] Documentation
-- [ ] Migration guide
 
-#### Phase 5: Community Preview (Estimated: 3-6 months)
-- [ ] Beta release
-- [ ] Gather feedback
-- [ ] Update DefinitelyTyped
-- [ ] Coordinate with ecosystem
-- [ ] Iterate based on feedback
+## Summary
 
-**Total Estimated Time: 12-22 months**
+This document outlines the design and implementation considerations for adding a primitive `int` type to TypeScript:
 
-## Recommendation
+### Key Design Decisions:
+1. `int` represents int32 range (-2147483648 to 2147483647)
+2. `int` is assignable to `number` (safe conversion)
+3. `number` is assignable to `int` with warning (configurable)
+4. Arithmetic operations between ints return int (except division → number)
+5. Mixed int/number operations return number
+6. Bitwise operations require and return int
+7. Array/string indexing changed to require int
+8. Numeric literals maintain current behavior (explicit int annotation required)
+9. Optional runtime enforcement via compiler option
 
-Adding an `int` type to TypeScript is a **major undertaking** with far-reaching implications. Key considerations:
+### Implementation Scope:
+- Parser, scanner, and type system changes
+- Standard library updates (Array, String index signatures)
+- New compiler options for behavior control
+- Language service integration
+- Comprehensive testing
 
-### Arguments For:
-1. Better semantic clarity for integer-only values
-2. Potential for future runtime optimizations
-3. Alignment with other statically-typed languages
-4. Better documentation of API intentions
-
-### Arguments Against:
-1. Massive implementation complexity (12-22 month effort)
-2. Backwards compatibility challenges
-3. Ecosystem fragmentation during transition
-4. JavaScript has no integer type (type system diverges from runtime)
-5. Current workarounds (branded types) exist
-6. Limited actual safety benefits (no runtime enforcement)
-
-### Alternative Recommendation:
-**Consider a more limited approach:**
-- Add `int` as a **type alias** to `number` with **lint rules** instead
-- Provides documentation benefits without language changes
-- Could be implemented in 1-2 months
-- Path to full implementation if successful
-
-## Conclusion
-
-While technically feasible, adding a native `int` type to TypeScript would be one of the most complex changes in the language's history, comparable to adding generics or union types. It requires careful design, extensive implementation work, and multi-year commitment to ecosystem migration.
-
-The decision should consider:
-- Whether the benefits justify the 12-22 month implementation cost
-- Impact on the TypeScript community and learning curve  
-- Backwards compatibility and migration strategy
-- Alignment with JavaScript's evolution (TC39)
-
-Before proceeding, recommend:
-1. Community RFC to gather feedback
-2. Prototype implementation to validate approach
-3. Analysis of real-world codebases to measure impact
-4. Coordination with TC39 on potential JavaScript integer types
+### Backwards Compatibility:
+- `int` is contextual keyword (only in type positions)
+- No breaking changes to literal inference
+- Gradual migration supported via warning mode
