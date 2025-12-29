@@ -238,8 +238,8 @@ declare function parseFloat(string: string): number;
    - **Solution**: `int` is a contextual keyword (only keyword in type positions)
 
 2. **Type inference changes:**
-   - Literals maintain current behavior (no breaking changes)
-   - Explicit `int` annotation required
+   - Integer literals in non-`const` variable declarations now infer as `int` (e.g., `let x = 42;` infers `int` rather than the literal type `42`).
+   - This is a breaking change, but is limited to value inference for integer literals; literal types remain available (e.g., via `as const` and in type positions).
 
 3. **Library compatibility:**
    - Existing type definitions continue to work
