@@ -61,11 +61,11 @@ let map: Map<string, int> = new Map();
    - CompilerOption to control behavior (warning/error)
    - Prevents forcing developers to add inappropriate conversions
 
-3. **Numeric literals maintain current behavior**
+3. **Numeric literals infer as int for integer values**
    ```typescript
-   let x = 42;      // Literal type 42 (current behavior)
-   const y = 42;    // Literal type 42 (current behavior)
-   let z: int = 42; // Explicit int annotation required
+   let x = 42;      // Infers int
+   const y = 42;    // Infers literal type 42
+   let z: int = 42; // Explicit int annotation
    ```
 
 ### 2. Type System Integration
@@ -98,10 +98,10 @@ Primitive = StringLike | NumberLike | BigIntLike | BooleanLike | ...
 
 #### 2.3 Type Inference Rules
 
-1. **Literal inference** (maintains current behavior):
+1. **Literal inference**:
    ```typescript
    const x = 42; // Infers literal type 42
-   let y = 42;   // Infers number (not int)
+   let y = 42;   // Infers int
    ```
 
 2. **Operation inference:**
@@ -286,7 +286,7 @@ let b: bigint = 42n;
 
 // Design decisions:
 let x = i + b;  // Not allowed - type error
-let y: bigint = i;  // Allowed - safe conversion
+let y: bigint = i;  // Not allowed - type error
 let z: int = Number(b); // Allowed with explicit conversion
 ```
 
@@ -331,9 +331,8 @@ Create tests in `tests/cases/fourslash/`:
 - Update all baselines that would change
 - Ensure error messages are clear and helpful
 
-### 8. Error Messages and Diagnostics
+### 9. Error Messages and Diagnostics
 
-#### 8.1 New Diagnostic Messages
 Need to add to `diagnosticMessages.json`:
 
 ```json
@@ -353,95 +352,7 @@ Need to add to `diagnosticMessages.json`:
 }
 ```
 
-#### 8.2 Error Recovery
-- Parser should recover gracefully from `int` type errors
-- Provide helpful suggestions for common mistakes
-
-### 9. Documentation Requirements
-
-#### 9.1 Language Specification
-- Update TypeScript language specification
-- Document type rules and semantics
-- Clarify relationship with `number` and `bigint`
-
-#### 9.2 Handbook Updates
-- Add section on integer types
-- Update "Everyday Types" page
-- Update "More on Functions" (return types)
-- Update "Narrowing" section
-
-#### 9.3 API Documentation
-- Document new type in API reference
-- Update standard library documentation
-
-#### 9.4 Migration Guide
-- Create guide for adopting `int` type
-- Best practices for when to use `int` vs `number`
-- Common patterns and anti-patterns
-
-### 10. Performance Considerations
-
-#### 10.1 Compiler Performance
-- Type checking with additional type may slow down compilation
-- Need to benchmark on large codebases
-- Optimize type comparison paths
-
-#### 10.2 Runtime Performance
-- **No runtime impact** (types are erased)
-- Could enable future optimizations:
-  - JIT could use int-specific operations
-  - Potential for future runtime mode with int enforcement
-
-### 11. Tooling Impact
-
-#### 11.1 Language Service
-- Update completions to suggest `int`
-- Update quick info to show `int` types
-- Update refactoring tools
-- Update rename functionality
-
-#### 11.2 Declaration Files (.d.ts)
-- Ensure `int` emits correctly in .d.ts files
-- Update .d.ts file parser
-
-#### 11.3 Editor Support
-- Update syntax highlighting
-- Update IntelliSense
-- Update error squiggles
-
-### 12. Community and Ecosystem Impact
-
-#### 12.1 Third-Party Tools
-- Linters (ESLint plugins)
-- Formatters (Prettier)
-- Bundlers and build tools
-- Testing frameworks
-
-#### 12.2 Learning Resources
-- Need to update tutorials
-- Video courses need updates
-- Stack Overflow answers become outdated
-
-### 13. Alternative Approaches
-
-#### 13.1 Branded Types (Current User-Land Solution)
-```typescript
-type int = number & { __int__: void };
-
-function toInt(n: number): int {
-    if (!Number.isInteger(n)) throw new Error("Not an integer");
-    return n as int;
-}
-```
-**Pros:** No language changes needed  
-**Cons:** No type inference, verbose, no IDE support
-
-#### 13.2 Template Literal Types
-Could potentially use template literal types for certain constraints, but not suitable for int.
-
-
-
-### 14. Resolved Design Questions
+### 10. Resolved Design Questions
 
 1. **`int` with decimal notation?**
    ```typescript
@@ -467,11 +378,11 @@ Could potentially use template literal types for certain constraints, but not su
 
 5. **Widening behavior:**
    ```typescript
-   let x = 42; // Literal type 42 (no change from current behavior)
-   let y: int = x; // Literal 42 is assignable to int
+   let x = 42; // Infers int
+   let y: int = x; // int is assignable to int
    ```
 
-### 15. Implementation Checklist
+### 11. Implementation Checklist
 
 #### Core Implementation
 - [ ] Add `IntKeyword` to SyntaxKind
@@ -513,12 +424,13 @@ This document outlines the design and implementation considerations for adding a
 1. `int` represents int32 range (-2147483648 to 2147483647)
 2. `int` is assignable to `number` (safe conversion)
 3. `number` is assignable to `int` with warning (configurable)
-4. Arithmetic operations between ints return int (except division → number)
-5. Mixed int/number operations return number
-6. Bitwise operations require and return int
-7. Array/string indexing changed to require int
-8. Numeric literals maintain current behavior (explicit int annotation required)
-9. Optional runtime enforcement via compiler option
+4. Integer literals (`42`) infer as `int` for let, literal type for const
+5. Arithmetic operations between ints return int (except division → number)
+6. Mixed int/number operations return number
+7. Bitwise operations require and return int
+8. Array/string indexing changed to require int
+9. `int` to `bigint` conversion not allowed (must use explicit conversion)
+10. Optional runtime enforcement via compiler option
 
 ### Implementation Scope:
 - Parser, scanner, and type system changes
@@ -529,5 +441,5 @@ This document outlines the design and implementation considerations for adding a
 
 ### Backwards Compatibility:
 - `int` is contextual keyword (only in type positions)
-- No breaking changes to literal inference
-- Gradual migration supported via warning mode
+- Integer literals now infer as `int` (breaking change for generic code expecting literal types)
+- Migration supported via warning mode for `number` → `int` assignments
