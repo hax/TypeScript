@@ -10,9 +10,9 @@ let i1: int = 42;
 let n1: number = i1; // Per RFC, this assignment is allowed (safe and expected).
 
 // Test 2: number to int assignability  
-// Decision needed: Should number be assignable to int?
+// According to the RFC, 'number' is assignable to 'int' with a warning (configurable as an error).
 let n2: number = 3.14;
-let i2: int = n2; // Should this be allowed? Probably not - it's a float!
+let i2: int = n2; // Allowed, but should produce a warning because 3.14 is not an integer.
 
 // Test 3: Integer literals to int
 let i3: int = 42;    // Should work
