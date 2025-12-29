@@ -20,13 +20,10 @@ let diffInt: int = a - b;
 let product = a * b;
 let productInt: int = a * b;
 
-// Division - Critical question: what should this return?
-// Option A: Always return number (3.333...)
-// Option B: Integer division with truncation (3)
-// Option C: Error if result assigned to int without explicit conversion
-let quotient = a / b;        // What type?
+// Division - returns number (per RFC design decision: division always produces `number` type)
+let quotient = a / b;        // Inferred as number
 let quotientNum: number = a / b;   // Should work
-let quotientInt: int = a / b;      // Should this work or error?
+let quotientInt: int = a / b;      // Design question: should this be allowed, or require explicit conversion from number to int?
 
 // Modulo - should return int
 let remainder = a % b;
