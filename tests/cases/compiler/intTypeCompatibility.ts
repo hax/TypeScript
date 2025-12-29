@@ -5,9 +5,9 @@
 // Note: This is a design exploration - the 'int' type does not currently exist.
 
 // Test 1: int to number assignability
-// Decision needed: Should int be assignable to number?
+// int is assignable to number (per RFC design decision).
 let i1: int = 42;
-let n1: number = i1; // Should this be allowed?
+let n1: number = i1; // Per RFC, this assignment is allowed (safe and expected).
 
 // Test 2: number to int assignability  
 // Decision needed: Should number be assignable to int?
