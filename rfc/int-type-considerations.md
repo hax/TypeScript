@@ -331,7 +331,7 @@ Create tests in `tests/cases/fourslash/`:
 - Update all baselines that would change
 - Ensure error messages are clear and helpful
 
-### 9. Error Messages and Diagnostics
+### 8. Error Messages and Diagnostics
 
 Need to add to `diagnosticMessages.json`:
 
