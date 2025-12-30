@@ -110,8 +110,8 @@ let numIndexed: NumberIndexed = intIndexed;  // Compatible?
 // Test 16: Conditional types
 type IsInt<T> = T extends int ? "yes" : "no";
 type Test1 = IsInt<int>;      // "yes"
-type Test2 = IsInt<number>;   // "no"?
-type Test3 = IsInt<42>;       // "yes" if 42 extends int?
+type Test2 = IsInt<number>;   // "no" - number is a supertype of int, so it does not extend int
+type Test3 = IsInt<42>;       // "yes" - 42 is an integer literal type and is considered a subtype of int
 
 // Test 17: Mapped types
 type IntFields<T> = {
