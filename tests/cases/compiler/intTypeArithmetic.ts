@@ -162,9 +162,9 @@ function specialValues() {
     let nan = i / 0;        // NaN
     let inf = i + Infinity; // Infinity
     
-    // Should these be assignable to int?
-    let nanInt: int = nan;  // Error?
-    let infInt: int = inf;  // Error?
+    // These are `number` values and are assignable to `int` with a warning (configurable as an error) per the RFC.
+    let nanInt: int = nan;  // Allowed with warning: assigning NaN (number) to int
+    let infInt: int = inf;  // Allowed with warning: assigning Infinity (number) to int
 }
 
 // Generic arithmetic
