@@ -357,7 +357,6 @@ Need to add to `diagnosticMessages.json`:
 1. **`int` with decimal notation?**
    ```typescript
    let x: int = 42.0; // Not allowed
-   ```
 
 2. **parseInt return type:**
    ```typescript
