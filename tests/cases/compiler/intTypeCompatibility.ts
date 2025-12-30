@@ -30,7 +30,7 @@ let i8: int = lit;   // Should 42 (literal) be assignable to int?
 
 // Test 6: int to literal type
 let i9: int = 42;
-let lit2: 42 = i9;   // Should int be assignable to specific literal? Probably not.
+let lit2: 42 = i9;   // int is not assignable to a specific literal type like 42; this should be an error.
 
 // Test 7: bigint and int
 let big: bigint = 42n;
