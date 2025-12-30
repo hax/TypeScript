@@ -57,7 +57,7 @@ let map: Map<string, int> = new Map();
    let n: number = 3.14;
    let i: int = n; // Warning by default, can be configured as error
    ```
-   - Allows migration of existing code
+   - Allows gradual migration of existing code by not immediately breaking assignments where `number` is passed to variables/parameters annotated as `int`, while still surfacing these sites as warnings so developers can incrementally fix type mismatches
    - CompilerOption to control behavior (warning/error)
    - Prevents forcing developers to add inappropriate conversions
 
