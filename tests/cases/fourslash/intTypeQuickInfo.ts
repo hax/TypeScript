@@ -36,8 +36,6 @@ goTo.marker("4");
 verify.quickInfoIs("const result: int");
 
 // Test 5: Quick info for integer literal
-// Depending on design decision, this could show:
-// - "42" (current behavior - literal type)
-// - "int" (if literals infer as int)
+// Quick info should show the literal type "42", since const integer literals infer as literal types, not as int.
 goTo.marker("5");
 verify.quickInfoExists();
