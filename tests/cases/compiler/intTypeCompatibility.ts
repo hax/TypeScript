@@ -35,7 +35,7 @@ let lit2: 42 = i9;   // int is not assignable to a specific literal type like 42
 // Test 7: bigint and int
 let big: bigint = 42n;
 let i10: int = big;      // Should error - different types
-let i11: int = Number(big); // Explicit conversion - should this work?
+let i11: int = Number(big); // Explicit conversion via Number() is required and allowed.
 
 // Test 8: Generic constraints
 function process<T extends int>(value: T): T {
