@@ -75,15 +75,15 @@ function intWithNumber() {
     let i: int = 10;
     let n: number = 3.5;
     
-    // What should these operations return?
-    let add = i + n;        // Should be number (13.5)
-    let sub = i - n;        // Should be number (6.5)
-    let mul = i * n;        // Should be number (35.0)
-    let div = i / n;        // Should be number
+    // Mixed int/number operations always return `number` (per RFC lines 108-119).
+    let add = i + n;        // number (13.5)
+    let sub = i - n;        // number (6.5)
+    let mul = i * n;        // number (35.0)
+    let div = i / n;        // number
     
-    // Should these be allowed?
-    let addInt: int = i + n;   // Error? Can't assign number to int
-    let subInt: int = i - n;   // Error?
+    // Assigning the `number` result of mixed operations to `int` should be an error (per RFC lines 55-62).
+    let addInt: int = i + n;   // Error: result is number, not int
+    let subInt: int = i - n;   // Error: result is number, not int
 }
 
 // Operations with literal types
