@@ -360,8 +360,7 @@ Need to add to `diagnosticMessages.json`:
 
 2. **parseInt return type:**
    ```typescript
-   let x = parseInt("42"); // Returns number (not int)
-   ```
+   let x = parseInt("42"); // Returns number (not int) for backward compatibility
 
 3. **JSON serialization:**
    ```typescript
