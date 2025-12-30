@@ -59,7 +59,7 @@ let map: Map<string, int> = new Map();
    ```
    - Allows gradual migration of existing code by not immediately breaking assignments where `number` is passed to variables/parameters annotated as `int`, while still surfacing these sites as warnings so developers can incrementally fix type mismatches
    - CompilerOption to control behavior (warning/error)
-   - Prevents forcing developers to add inappropriate conversions
+   - Avoids forcing developers to add noisy or semantically unnecessary casts (for example, when a value is known to be an integer but is typed as `number`, requiring an explicit `number` → `int` conversion would add clutter without improving safety)
 
 3. **Numeric literals infer as int for integer values**
    ```typescript
