@@ -6453,8 +6453,14 @@ namespace Parser {
         parseExpected(SyntaxKind.CloseBracketToken);
 
         const indexedAccess = questionDotToken || tryReparseOptionalChain(expression) ?
-            factoryCreateElementAccessChain(expression, questionDotToken, caretToken, argumentExpression) :
-            factoryCreateElementAccessExpression(expression, caretToken, argumentExpression);
+            factoryCreateElementAccessChain(expression, questionDotToken, argumentExpression) :
+            factoryCreateElementAccessExpression(expression, argumentExpression);
+
+        // Set caretToken property if present
+        if (caretToken) {
+            (indexedAccess as any).caretToken = caretToken;
+        }
+
         return finishNode(indexedAccess, pos);
     }
 

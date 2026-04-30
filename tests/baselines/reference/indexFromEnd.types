@@ -1,0 +1,210 @@
+//// [tests/cases/compiler/indexFromEnd.ts] ////
+
+=== indexFromEnd.ts ===
+// Basic index-from-end syntax test
+
+const arr = [1, 2, 3, 4, 5];
+>arr : number[]
+>    : ^^^^^^^^
+>[1, 2, 3, 4, 5] : number[]
+>                : ^^^^^^^^
+>1 : 1
+>  : ^
+>2 : 2
+>  : ^
+>3 : 3
+>  : ^
+>4 : 4
+>  : ^
+>5 : 5
+>  : ^
+
+// Valid usage - simple identifier
+const index = 1;
+>index : 1
+>      : ^
+>1 : 1
+>  : ^
+
+const last = arr[^index];  // Should be arr[arr.length - index]
+>last : number
+>     : ^^^^^^
+>arr[^index] : number
+>            : ^^^^^^
+>arr : number[]
+>    : ^^^^^^^^
+>index : 1
+>      : ^
+
+// Valid usage - literal
+const secondLast = arr[^2];  // Should be arr[arr.length - 2]
+>secondLast : number
+>           : ^^^^^^
+>arr[^2] : number
+>        : ^^^^^^
+>arr : number[]
+>    : ^^^^^^^^
+>2 : 2
+>  : ^
+
+// Valid usage - expression with parentheses
+const n = 1;
+>n : 1
+>  : ^
+>1 : 1
+>  : ^
+
+const m = 2;
+>m : 2
+>  : ^
+>2 : 2
+>  : ^
+
+const fromEnd = arr[^(n + m)];  // Should be arr[arr.length - (n + m)]
+>fromEnd : number
+>        : ^^^^^^
+>arr[^(n + m)] : number
+>              : ^^^^^^
+>arr : number[]
+>    : ^^^^^^^^
+>(n + m) : number
+>        : ^^^^^^
+>n + m : number
+>      : ^^^^^^
+>n : 1
+>  : ^
+>m : 2
+>  : ^
+
+// Valid usage - method call
+function getIndex(): number {
+>getIndex : () => number
+>         : ^^^^^^      
+
+    return 1;
+>1 : 1
+>  : ^
+}
+const withMethod = arr[^getIndex()];
+>withMethod : number
+>           : ^^^^^^
+>arr[^getIndex()] : number
+>                 : ^^^^^^
+>arr : number[]
+>    : ^^^^^^^^
+>getIndex() : number
+>           : ^^^^^^
+>getIndex : () => number
+>         : ^^^^^^      
+
+// Valid usage - property access
+const obj = { idx: 1 };
+>obj : { idx: number; }
+>    : ^^^^^^^^^^^^^^^^
+>{ idx: 1 } : { idx: number; }
+>           : ^^^^^^^^^^^^^^^^
+>idx : number
+>    : ^^^^^^
+>1 : 1
+>  : ^
+
+const withProperty = arr[^obj.idx];
+>withProperty : number
+>             : ^^^^^^
+>arr[^obj.idx] : number
+>              : ^^^^^^
+>arr : number[]
+>    : ^^^^^^^^
+>obj.idx : number
+>        : ^^^^^^
+>obj : { idx: number; }
+>    : ^^^^^^^^^^^^^^^^
+>idx : number
+>    : ^^^^^^
+
+// Type checking - should error for non-number
+const str = "1";
+>str : "1"
+>    : ^^^
+>"1" : "1"
+>    : ^^^
+
+const invalid = arr[^str];  // Error: Index from end operator requires an operand of type 'number'
+>invalid : any
+>        : ^^^
+>arr[^str] : any
+>          : ^^^
+>arr : number[]
+>    : ^^^^^^^^
+>str : "1"
+>    : ^^^
+
+// Should work with string arrays
+const strArr = ["a", "b", "c"];
+>strArr : string[]
+>       : ^^^^^^^^
+>["a", "b", "c"] : string[]
+>                : ^^^^^^^^
+>"a" : "a"
+>    : ^^^
+>"b" : "b"
+>    : ^^^
+>"c" : "c"
+>    : ^^^
+
+const lastStr = strArr[^1];
+>lastStr : string
+>        : ^^^^^^
+>strArr[^1] : string
+>           : ^^^^^^
+>strArr : string[]
+>       : ^^^^^^^^
+>1 : 1
+>  : ^
+
+// Should work with tuples
+const tuple: [number, string, boolean] = [1, "test", true];
+>tuple : [number, string, boolean]
+>      : ^^^^^^^^^^^^^^^^^^^^^^^^^
+>[1, "test", true] : [number, string, true]
+>                  : ^^^^^^^^^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+>"test" : "test"
+>       : ^^^^^^
+>true : true
+>     : ^^^^
+
+const lastInTuple = tuple[^1];
+>lastInTuple : string
+>            : ^^^^^^
+>tuple[^1] : string
+>          : ^^^^^^
+>tuple : [number, string, boolean]
+>      : ^^^^^^^^^^^^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+
+// Should work with readonly arrays
+const readonlyArr: readonly number[] = [1, 2, 3];
+>readonlyArr : readonly number[]
+>            : ^^^^^^^^^^^^^^^^^
+>[1, 2, 3] : number[]
+>          : ^^^^^^^^
+>1 : 1
+>  : ^
+>2 : 2
+>  : ^
+>3 : 3
+>  : ^
+
+const lastReadonly = readonlyArr[^1];
+>lastReadonly : number
+>             : ^^^^^^
+>readonlyArr[^1] : number
+>                : ^^^^^^
+>readonlyArr : readonly number[]
+>            : ^^^^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+

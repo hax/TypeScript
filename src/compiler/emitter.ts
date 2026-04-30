@@ -2678,7 +2678,7 @@ export function createPrinter(printerOptions: PrinterOptions = {}, handlers: Pri
         if (node.caretToken) {
             emitExpression(node.expression, parenthesizer.parenthesizeLeftSideOfAccess);
             writePunctuation(".");
-            writeWord("length");
+            writeLiteral("length");
             writeSpace();
             writePunctuation("-");
             writeSpace();
