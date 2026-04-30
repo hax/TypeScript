@@ -1,0 +1,189 @@
+//// [tests/cases/compiler/variableNameTrailingApostrophes.ts] ////
+
+=== variableNameTrailingApostrophes.ts ===
+let x = 1;
+>x : number
+>  : ^^^^^^
+>1 : 1
+>  : ^
+
+let x' = x + 2;
+>x : any
+>  : ^^^
+>' = x + 2; : " = x + 2;"
+>           : ^^^^^^^^^^^
+
+const x'' = x' + 1;
+>x : any
+>  : ^^^
+>'' = x : number
+>       : ^^^^^^
+>'' : ""
+>   : ^^
+>x : number
+>  : ^^^^^^
+>' + 1; : " + 1;"
+>       : ^^^^^^^
+
+var x''' = x'' + 1;
+>x : any
+>  : ^^^
+>'' : ""
+>   : ^^
+>' = x' : " = x"
+>       : ^^^^^^
+>' + 1; : " + 1;"
+>       : ^^^^^^^
+
+using y' = {
+>y : any
+>  : ^^^
+>' = {    [Symbol.dispose]() : any
+>                            : ^^^
+>' = {    [Symbol.dispose] : string
+>                          : ^^^^^^
+>' = { : " = {"
+>      : ^^^^^^
+
+    [Symbol.dispose]() {},
+>Symbol.dispose : any
+>               : ^^^
+>Symbol : SymbolConstructor
+>       : ^^^^^^^^^^^^^^^^^
+>dispose : any
+>        : ^^^
+
+};
+
+const o1 = { x' }; // property shorthand strips trailing apostrophes
+>o1 : any
+>   : ^^^
+>{ x' }; // property shorthand strips trailing apostropheso1.x.toFixed();const o2 = { x'': x''' };o2.x.toFixed();let : { x: number; ' }; // property shorthand strips trailing apostrophes': any; const: { x: number; "": any; o2: any; let: any; }; }
+>                                                                                                                    : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>x : number
+>  : ^^^^^^
+>' }; // property shorthand strips trailing apostrophes : any
+>                                                       : ^^^
+
+o1.x.toFixed();
+>o1.x.toFixed() : any
+>               : ^^^
+>o1.x.toFixed : any
+>             : ^^^
+>o1.x : any
+>     : ^^^
+>o1 : any
+>   : ^^^
+>x : any
+>  : ^^^
+>toFixed : any
+>        : ^^^
+
+const o2 = { x'': x''' };
+>const : { x: number; "": any; o2: any; let: any; }
+>      : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>o2 = { x'': x''' };o2.x.toFixed();let : { x: number; "": any; o2: any; let: any; }
+>                                      : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>o2 : any
+>   : ^^^
+>{ x'': x''' };o2.x.toFixed();let : { x: number; "": any; o2: any; let: any; }
+>                                 : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>x : number
+>  : ^^^^^^
+>'' : number
+>   : ^^^^^^
+>x : number
+>  : ^^^^^^
+>'' : number
+>   : ^^^^^^
+>' }; : " };"
+>     : ^^^^^
+
+o2.x.toFixed();
+>o2 : any
+>   : ^^^
+> : number
+> : ^^^^^^
+>.x.toFixed() : any
+>             : ^^^
+>.x.toFixed : any
+>           : ^^^
+>.x : any
+>   : ^^^
+> : any
+> : ^^^
+>x : any
+>  : ^^^
+>toFixed : any
+>        : ^^^
+
+let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+>let : any
+>    : ^^^
+>x : any
+>  : ^^^
+
+x'.toFixed();
+>x : any
+>  : ^^^
+
+let { x: x'''' } = o1;
+>let : any
+>    : ^^^
+>x : any
+>  : ^^^
+>x : any
+>  : ^^^
+> : any
+> : ^^^
+> : any
+> : ^^^
+>o1 : any
+>   : ^^^
+
+x''''.toFixed();
+>x : number
+>  : ^^^^^^
+>'' : ""
+>   : ^^
+>''.toFixed() : any
+>             : ^^^
+>''.toFixed : any
+>           : ^^^
+>'' : ""
+>   : ^^
+>toFixed : any
+>        : ^^^
+
+class C {
+>C : C
+>  : ^
+
+    method() {}
+>method : () => void
+>       : ^^^^^^^^^^
+
+    method'() {} // should error
+>method : () => void
+>       : ^^^^^^^^^^
+>'() {} // should error : any
+>                       : ^^^
+}
+
+const obj = {
+>obj : { method: any; '() {}, // should error': any; }
+>    : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>{    method'() {}, // should error} : { method: any; '() {}, // should error': any; }
+>                                    : ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    method'() {}, // should error
+>method : any
+>       : ^^^
+>'() {}, // should error : any
+>                        : ^^^
+
+};
+> : any
+> : ^^^
+
+
