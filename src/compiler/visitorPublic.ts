@@ -1039,6 +1039,7 @@ const visitEachChildTable: VisitEachChildTable = {
                 node,
                 Debug.checkDefined(nodeVisitor(node.expression, visitor, isExpression)),
                 tokenVisitor ? nodeVisitor(node.questionDotToken, tokenVisitor, isQuestionDotToken) : node.questionDotToken,
+                tokenVisitor ? nodeVisitor(node.caretToken, tokenVisitor, isToken) : node.caretToken,
                 Debug.checkDefined(nodeVisitor(node.argumentExpression, visitor, isExpression)),
             ) :
             context.factory.updateElementAccessExpression(

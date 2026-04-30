@@ -35478,6 +35478,14 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
             return objectType;
         }
 
+        // Check for caret token - index must be number type
+        if (node.caretToken) {
+            if (!isTypeAssignableTo(indexType, numberType)) {
+                error(indexExpression, Diagnostics.Index_from_end_operator_requires_an_operand_of_type_number);
+                return errorType;
+            }
+        }
+
         if (isConstEnumObjectType(objectType) && !isStringLiteralLike(indexExpression)) {
             error(indexExpression, Diagnostics.A_const_enum_member_can_only_be_accessed_using_a_string_literal);
             return errorType;

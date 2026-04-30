@@ -3003,6 +3003,7 @@ export interface ElementAccessExpression extends MemberExpression, Declaration, 
     readonly kind: SyntaxKind.ElementAccessExpression;
     readonly expression: LeftHandSideExpression;
     readonly questionDotToken?: QuestionDotToken;
+    readonly caretToken?: Token<SyntaxKind.CaretToken>;
     readonly argumentExpression: Expression;
 }
 
