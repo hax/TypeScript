@@ -43,6 +43,10 @@ export function tokenIsIdentifierOrKeyword(token: SyntaxKind): boolean {
     return token >= SyntaxKind.Identifier;
 }
 
+export function tokenIsIdentifierOrKeywordOrApostrophe(token: SyntaxKind): boolean {
+    return tokenIsIdentifierOrKeyword(token) || token === SyntaxKind.SingleQuoteToken;
+}
+
 /** @internal */
 export function tokenIsIdentifierOrKeywordOrGreaterThan(token: SyntaxKind): boolean {
     return token === SyntaxKind.GreaterThanToken || tokenIsIdentifierOrKeyword(token);

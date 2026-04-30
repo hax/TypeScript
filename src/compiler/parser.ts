@@ -368,6 +368,7 @@ import {
     Token,
     TokenFlags,
     tokenIsIdentifierOrKeyword,
+    tokenIsIdentifierOrKeywordOrApostrophe,
     tokenIsIdentifierOrKeywordOrGreaterThan,
     tokenToString,
     tracing,
@@ -2642,6 +2643,43 @@ namespace Parser {
         return identifier;
     }
 
+    function parseIdentifierWithOptionalTrailingApostrophes(isIdentifier: boolean, diagnosticMessage?: DiagnosticMessage, privateIdentifierDiagnosticMessage?: DiagnosticMessage): Identifier {
+        const identifier = createIdentifier(isIdentifier, diagnosticMessage, privateIdentifierDiagnosticMessage);
+        if (isIdentifier && token() === SyntaxKind.SingleQuoteToken && !scanner.hasPrecedingLineBreak()) {
+            while (parseOptionalToken(SyntaxKind.SingleQuoteToken)) {
+                // skip
+            }
+            const start = identifier.end;
+            const end = scanner.getTokenStart();
+            identifier.text = internIdentifier(end > start ? identifier.text + sourceText.substring(start, end) : identifier.text);
+        }
+        return identifier;
+    }
+
+    function parseVariableLikeIdentifier(): Identifier {
+        return parseIdentifierWithOptionalTrailingApostrophes(isBindingIdentifier());
+    }
+
+    function parseVariableLikePropertyName(): PropertyName {
+        if (tokenIsIdentifierOrKeywordOrApostrophe(token())) {
+            const start = getNodePos();
+            const identifier = parseIdentifierWithOptionalTrailingApostrophes(tokenIsIdentifierOrKeyword(token()));
+            const end = identifier.end;
+            const propertyName = finishNode(factoryCreateIdentifier(stripTrailingApostrophes(identifier.text), identifier.originalKeywordKind, identifier.hasExtendedUnicodeEscape), start);
+            setTextRangePosEnd(propertyName, start, end);
+            return propertyName;
+        }
+        return parsePropertyName();
+    }
+
+    function stripTrailingApostrophes(text: string) {
+        let end = text.length;
+        while (end > 0 && text.charCodeAt(end - 1) === CharacterCodes.singleQuote) {
+            end--;
+        }
+        return end === text.length ? text : text.slice(0, end);
+    }
+
     // An identifier that starts with two underscores has an extra underscore character prepended to it to avoid issues
     // with magic property names like '__proto__'. The 'identifiers' object is used to share a single string instance for
     // each identifier in order to reduce memory consumption.
@@ -2682,7 +2720,7 @@ namespace Parser {
     }
 
     function parseBindingIdentifier(privateIdentifierDiagnosticMessage?: DiagnosticMessage) {
-        return createIdentifier(isBindingIdentifier(), /*diagnosticMessage*/ undefined, privateIdentifierDiagnosticMessage);
+        return parseVariableLikeIdentifier();
     }
 
     function parseIdentifier(diagnosticMessage?: DiagnosticMessage, privateIdentifierDiagnosticMessage?: DiagnosticMessage): Identifier {
@@ -6715,7 +6753,7 @@ namespace Parser {
 
         const asteriskToken = parseOptionalToken(SyntaxKind.AsteriskToken);
         const tokenIsIdentifier = isIdentifier();
-        const name = parsePropertyName();
+        const name = isIdentifier() ? parseVariableLikePropertyName() : parsePropertyName();
 
         // Disallowing of optional property assignments and definite assignment assertion happens in the grammar checker.
         const questionToken = parseOptionalToken(SyntaxKind.QuestionToken);
@@ -7595,7 +7633,7 @@ namespace Parser {
         const pos = getNodePos();
         const dotDotDotToken = parseOptionalToken(SyntaxKind.DotDotDotToken);
         const tokenIsIdentifier = isBindingIdentifier();
-        let propertyName: PropertyName | undefined = parsePropertyName();
+        let propertyName: PropertyName | undefined = tokenIsIdentifier ? parseVariableLikePropertyName() : parsePropertyName();
         let name: BindingName;
         if (tokenIsIdentifier && token() !== SyntaxKind.ColonToken) {
             name = propertyName as Identifier;
