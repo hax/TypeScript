@@ -9,6 +9,7 @@ import {
     chainBundle,
     ClassDeclaration,
     Debug,
+    ElementAccessExpression,
     EmitFlags,
     ExportAssignment,
     ExportSpecifier,
@@ -25,6 +26,7 @@ import {
     isBindingPattern,
     isBlock,
     isCustomPrologue,
+    isElementAccessChain,
     isExpression,
     isGeneratedIdentifier,
     isIdentifier,
@@ -34,6 +36,7 @@ import {
     isPrologueDirective,
     isSourceFile,
     isStatement,
+    isSuperKeyword,
     isVariableDeclarationList,
     isVariableStatement,
     ModifierFlags,
@@ -120,9 +123,53 @@ export function transformESNext(context: TransformationContext): (x: SourceFile 
             case SyntaxKind.ForOfStatement:
                 return visitForOfStatement(node as ForOfStatement);
 
+            case SyntaxKind.ElementAccessExpression:
+                return visitElementAccessExpression(node as ElementAccessExpression);
+
             default:
                 return visitEachChild(node, visitor, context);
         }
+    }
+
+    function visitElementAccessExpression(node: ElementAccessExpression): Expression {
+        if (!node.caretToken) {
+            return visitEachChild(node, visitor, context);
+        }
+
+        const argumentExpression = visitNode(node.argumentExpression, visitor, isExpression);
+        let expression = visitNode(node.expression, visitor, isExpression);
+        let lengthExpressionTarget: Expression;
+
+        if (!isSuperKeyword(expression)) {
+            const temp = factory.createTempVariable(hoistVariableDeclaration);
+            lengthExpressionTarget = factory.cloneNode(temp);
+            expression = factory.createAssignment(temp, expression);
+        }
+        else {
+            lengthExpressionTarget = factory.createSuper();
+        }
+
+        const transformed = isElementAccessChain(node)
+            ? factory.createElementAccessChain(
+                expression,
+                node.questionDotToken,
+                factory.createBinaryExpression(
+                    factory.createPropertyAccessExpression(lengthExpressionTarget, "length"),
+                    factory.createToken(SyntaxKind.MinusToken),
+                    argumentExpression,
+                ),
+            )
+            : factory.createElementAccessExpression(
+                expression,
+                factory.createBinaryExpression(
+                    factory.createPropertyAccessExpression(lengthExpressionTarget, "length"),
+                    factory.createToken(SyntaxKind.MinusToken),
+                    argumentExpression,
+                ),
+            );
+        setOriginalNode(transformed, node);
+        setTextRange(transformed, node);
+        return transformed;
     }
 
     function visitSourceFile(node: SourceFile): SourceFile {

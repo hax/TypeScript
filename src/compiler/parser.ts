@@ -741,6 +741,7 @@ const forEachChildTable: ForEachChildTable = {
     [SyntaxKind.ElementAccessExpression]: function forEachChildInElementAccessExpression<T>(node: ElementAccessExpression, cbNode: (node: Node) => T | undefined, _cbNodes?: (nodes: NodeArray<Node>) => T | undefined): T | undefined {
         return visitNode(cbNode, node.expression) ||
             visitNode(cbNode, node.questionDotToken) ||
+            visitNode(cbNode, node.caretToken) ||
             visitNode(cbNode, node.argumentExpression);
     },
     [SyntaxKind.CallExpression]: forEachChildInCallOrNewExpression,
@@ -6431,6 +6432,13 @@ namespace Parser {
 
     function parseElementAccessExpressionRest(pos: number, expression: LeftHandSideExpression, questionDotToken: QuestionDotToken | undefined) {
         let argumentExpression: Expression;
+        let caretToken: Token<SyntaxKind.CaretToken> | undefined;
+
+        // Check for caret token (^) for index-from-end syntax
+        if (token() === SyntaxKind.CaretToken) {
+            caretToken = parseTokenNode<Token<SyntaxKind.CaretToken>>();
+        }
+
         if (token() === SyntaxKind.CloseBracketToken) {
             argumentExpression = createMissingNode(SyntaxKind.Identifier, /*reportAtCurrentPosition*/ true, Diagnostics.An_element_access_expression_should_take_an_argument);
         }
@@ -6445,8 +6453,12 @@ namespace Parser {
         parseExpected(SyntaxKind.CloseBracketToken);
 
         const indexedAccess = questionDotToken || tryReparseOptionalChain(expression) ?
-            factoryCreateElementAccessChain(expression, questionDotToken, argumentExpression) :
-            factoryCreateElementAccessExpression(expression, argumentExpression);
+            factoryCreateElementAccessChain(expression, questionDotToken, argumentExpression, caretToken) :
+            factoryCreateElementAccessExpression(expression, argumentExpression, caretToken);
+        if (caretToken) {
+            setParent(caretToken, indexedAccess);
+        }
+
         return finishNode(indexedAccess, pos);
     }
 
