@@ -101,9 +101,14 @@ import {
     some,
     Statement,
     SyntaxKind,
+    Token,
     TransformationContext,
     Visitor,
 } from "./_namespaces/ts.js";
+
+function isCaretToken(node: Node): node is Token<SyntaxKind.CaretToken> {
+    return node.kind === SyntaxKind.CaretToken;
+}
 
 /**
  * Visits a Node using the supplied visitor, possibly returning a new Node in its place.
@@ -1034,18 +1039,20 @@ const visitEachChildTable: VisitEachChildTable = {
     },
 
     [SyntaxKind.ElementAccessExpression]: function visitEachChildOfElementAccessExpression(node, visitor, context, _nodesVisitor, nodeVisitor, tokenVisitor) {
+        const caretToken = tokenVisitor ? nodeVisitor(node.caretToken, tokenVisitor, isCaretToken) : node.caretToken;
         return isElementAccessChain(node) ?
             context.factory.updateElementAccessChain(
                 node,
                 Debug.checkDefined(nodeVisitor(node.expression, visitor, isExpression)),
                 tokenVisitor ? nodeVisitor(node.questionDotToken, tokenVisitor, isQuestionDotToken) : node.questionDotToken,
-                node.caretToken,
                 Debug.checkDefined(nodeVisitor(node.argumentExpression, visitor, isExpression)),
+                caretToken,
             ) :
             context.factory.updateElementAccessExpression(
                 node,
                 Debug.checkDefined(nodeVisitor(node.expression, visitor, isExpression)),
                 Debug.checkDefined(nodeVisitor(node.argumentExpression, visitor, isExpression)),
+                caretToken,
             );
     },
 

@@ -139,6 +139,26 @@ const invalid = arr[^str];  // Error: Index from end operator requires an operan
 >str : "1"
 >    : ^^^
 
+// Type checking - should error for non-array-like targets
+interface NumericIndexWithoutLength {
+    [n: number]: number;
+>n : number
+>  : ^^^^^^
+}
+declare const numericIndexWithoutLength: NumericIndexWithoutLength;
+>numericIndexWithoutLength : NumericIndexWithoutLength
+>                          : ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+const invalidTarget = numericIndexWithoutLength[^1];  // Error: requires numeric length + numeric indexing
+>invalidTarget : any
+>              : ^^^
+>numericIndexWithoutLength[^1] : any
+>                              : ^^^
+>numericIndexWithoutLength : NumericIndexWithoutLength
+>                          : ^^^^^^^^^^^^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+
 // Should work with string arrays
 const strArr = ["a", "b", "c"];
 >strArr : string[]
@@ -205,6 +225,82 @@ const lastReadonly = readonlyArr[^1];
 >                : ^^^^^^
 >readonlyArr : readonly number[]
 >            : ^^^^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+
+// Emit - base expression should only be evaluated once
+let calls = 0;
+>calls : number
+>      : ^^^^^^
+>0 : 0
+>  : ^
+
+function getArr() {
+>getArr : () => number[]
+>       : ^^^^^^^^^^^^^^
+
+    calls++;
+>calls++ : number
+>        : ^^^^^^
+>calls : number
+>      : ^^^^^^
+
+    return arr;
+>arr : number[]
+>    : ^^^^^^^^
+}
+const withSideEffects = getArr()[^1];
+>withSideEffects : number
+>                : ^^^^^^
+>getArr()[^1] : number
+>             : ^^^^^^
+>getArr() : number[]
+>         : ^^^^^^^^
+>getArr : () => number[]
+>       : ^^^^^^^^^^^^^^
+>1 : 1
+>  : ^
+
+// Emit - optional chaining should preserve short-circuiting and still evaluate base once
+let optionalCalls = 0;
+>optionalCalls : number
+>              : ^^^^^^
+>0 : 0
+>  : ^
+
+function getOptionalArr(): number[] | undefined {
+>getOptionalArr : () => number[] | undefined
+>               : ^^^^^^                    
+
+    optionalCalls++;
+>optionalCalls++ : number
+>                : ^^^^^^
+>optionalCalls : number
+>              : ^^^^^^
+
+    return optionalCalls % 2 ? arr : undefined;
+>optionalCalls % 2 ? arr : undefined : number[] | undefined
+>                                    : ^^^^^^^^^^^^^^^^^^^^
+>optionalCalls % 2 : number
+>                  : ^^^^^^
+>optionalCalls : number
+>              : ^^^^^^
+>2 : 2
+>  : ^
+>arr : number[]
+>    : ^^^^^^^^
+>undefined : undefined
+>          : ^^^^^^^^^
+}
+const optionalWithSideEffects = getOptionalArr()?.[^1];
+>optionalWithSideEffects : number | undefined
+>                        : ^^^^^^^^^^^^^^^^^^
+>getOptionalArr()?.[^1] : number | undefined
+>                       : ^^^^^^^^^^^^^^^^^^
+>getOptionalArr() : number[] | undefined
+>                 : ^^^^^^^^^^^^^^^^^^^^
+>getOptionalArr : () => number[] | undefined
+>               : ^^^^^^                    
 >1 : 1
 >  : ^
 

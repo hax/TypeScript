@@ -8547,5 +8547,9 @@
     "Index from end operator requires an operand of type 'number'.": {
         "category": "Error",
         "code": 18062
+    },
+    "Index from end operator can only be used with values that have a numeric 'length' property and support numeric indexing.": {
+        "category": "Error",
+        "code": 18063
     }
 }

@@ -7,3 +7,7 @@
 
 goTo.marker("marker");
 verify.currentLineContentIs("const last = arr[^index];");
+verify.completions({
+    marker: "marker",
+    includes: "index",
+});

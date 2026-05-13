@@ -2673,21 +2673,7 @@ export function createPrinter(printerOptions: PrinterOptions = {}, handlers: Pri
         emitExpression(node.expression, parenthesizer.parenthesizeLeftSideOfAccess);
         emit(node.questionDotToken);
         emitTokenWithComment(SyntaxKind.OpenBracketToken, node.expression.end, writePunctuation, node);
-
-        // If caretToken is present, transform to: expression.length - argumentExpression
-        if (node.caretToken) {
-            emitExpression(node.expression, parenthesizer.parenthesizeLeftSideOfAccess);
-            writePunctuation(".");
-            writeLiteral("length");
-            writeSpace();
-            writePunctuation("-");
-            writeSpace();
-            emitExpression(node.argumentExpression);
-        }
-        else {
-            emitExpression(node.argumentExpression);
-        }
-
+        emitExpression(node.argumentExpression);
         emitTokenWithComment(SyntaxKind.CloseBracketToken, node.argumentExpression.end, writePunctuation, node);
     }
 

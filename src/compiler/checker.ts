@@ -35484,6 +35484,12 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
                 error(indexExpression, Diagnostics.Index_from_end_operator_requires_an_operand_of_type_number);
                 return errorType;
             }
+
+            const lengthType = getTypeOfPropertyOfType(objectType, "length" as __String);
+            if (!lengthType || !isTypeAssignableTo(lengthType, numberType) || !getIndexTypeOfType(objectType, numberType)) {
+                error(node.expression, Diagnostics.Index_from_end_operator_can_only_be_used_with_values_that_have_a_numeric_length_property_and_support_numeric_indexing);
+                return errorType;
+            }
         }
 
         if (isConstEnumObjectType(objectType) && !isStringLiteralLike(indexExpression)) {

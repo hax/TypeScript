@@ -29,6 +29,13 @@ const withProperty = arr[^obj.idx];
 const str = "1";
 const invalid = arr[^str];  // Error: Index from end operator requires an operand of type 'number'
 
+// Type checking - should error for non-array-like targets
+interface NumericIndexWithoutLength {
+    [n: number]: number;
+}
+declare const numericIndexWithoutLength: NumericIndexWithoutLength;
+const invalidTarget = numericIndexWithoutLength[^1];  // Error: requires numeric length + numeric indexing
+
 // Should work with string arrays
 const strArr = ["a", "b", "c"];
 const lastStr = strArr[^1];
@@ -40,3 +47,19 @@ const lastInTuple = tuple[^1];
 // Should work with readonly arrays
 const readonlyArr: readonly number[] = [1, 2, 3];
 const lastReadonly = readonlyArr[^1];
+
+// Emit - base expression should only be evaluated once
+let calls = 0;
+function getArr() {
+    calls++;
+    return arr;
+}
+const withSideEffects = getArr()[^1];
+
+// Emit - optional chaining should preserve short-circuiting and still evaluate base once
+let optionalCalls = 0;
+function getOptionalArr(): number[] | undefined {
+    optionalCalls++;
+    return optionalCalls % 2 ? arr : undefined;
+}
+const optionalWithSideEffects = getOptionalArr()?.[^1];

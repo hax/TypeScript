@@ -65,28 +65,79 @@ const invalid = arr[^str];  // Error: Index from end operator requires an operan
 >arr : Symbol(arr, Decl(indexFromEnd.ts, 2, 5))
 >str : Symbol(str, Decl(indexFromEnd.ts, 27, 5))
 
+// Type checking - should error for non-array-like targets
+interface NumericIndexWithoutLength {
+>NumericIndexWithoutLength : Symbol(NumericIndexWithoutLength, Decl(indexFromEnd.ts, 28, 26))
+
+    [n: number]: number;
+>n : Symbol(n, Decl(indexFromEnd.ts, 32, 5))
+}
+declare const numericIndexWithoutLength: NumericIndexWithoutLength;
+>numericIndexWithoutLength : Symbol(numericIndexWithoutLength, Decl(indexFromEnd.ts, 34, 13))
+>NumericIndexWithoutLength : Symbol(NumericIndexWithoutLength, Decl(indexFromEnd.ts, 28, 26))
+
+const invalidTarget = numericIndexWithoutLength[^1];  // Error: requires numeric length + numeric indexing
+>invalidTarget : Symbol(invalidTarget, Decl(indexFromEnd.ts, 35, 5))
+>numericIndexWithoutLength : Symbol(numericIndexWithoutLength, Decl(indexFromEnd.ts, 34, 13))
+
 // Should work with string arrays
 const strArr = ["a", "b", "c"];
->strArr : Symbol(strArr, Decl(indexFromEnd.ts, 31, 5))
+>strArr : Symbol(strArr, Decl(indexFromEnd.ts, 38, 5))
 
 const lastStr = strArr[^1];
->lastStr : Symbol(lastStr, Decl(indexFromEnd.ts, 32, 5))
->strArr : Symbol(strArr, Decl(indexFromEnd.ts, 31, 5))
+>lastStr : Symbol(lastStr, Decl(indexFromEnd.ts, 39, 5))
+>strArr : Symbol(strArr, Decl(indexFromEnd.ts, 38, 5))
 
 // Should work with tuples
 const tuple: [number, string, boolean] = [1, "test", true];
->tuple : Symbol(tuple, Decl(indexFromEnd.ts, 35, 5))
+>tuple : Symbol(tuple, Decl(indexFromEnd.ts, 42, 5))
 
 const lastInTuple = tuple[^1];
->lastInTuple : Symbol(lastInTuple, Decl(indexFromEnd.ts, 36, 5))
->tuple : Symbol(tuple, Decl(indexFromEnd.ts, 35, 5))
+>lastInTuple : Symbol(lastInTuple, Decl(indexFromEnd.ts, 43, 5))
+>tuple : Symbol(tuple, Decl(indexFromEnd.ts, 42, 5))
 >1 : Symbol(1)
 
 // Should work with readonly arrays
 const readonlyArr: readonly number[] = [1, 2, 3];
->readonlyArr : Symbol(readonlyArr, Decl(indexFromEnd.ts, 39, 5))
+>readonlyArr : Symbol(readonlyArr, Decl(indexFromEnd.ts, 46, 5))
 
 const lastReadonly = readonlyArr[^1];
->lastReadonly : Symbol(lastReadonly, Decl(indexFromEnd.ts, 40, 5))
->readonlyArr : Symbol(readonlyArr, Decl(indexFromEnd.ts, 39, 5))
+>lastReadonly : Symbol(lastReadonly, Decl(indexFromEnd.ts, 47, 5))
+>readonlyArr : Symbol(readonlyArr, Decl(indexFromEnd.ts, 46, 5))
+
+// Emit - base expression should only be evaluated once
+let calls = 0;
+>calls : Symbol(calls, Decl(indexFromEnd.ts, 50, 3))
+
+function getArr() {
+>getArr : Symbol(getArr, Decl(indexFromEnd.ts, 50, 14))
+
+    calls++;
+>calls : Symbol(calls, Decl(indexFromEnd.ts, 50, 3))
+
+    return arr;
+>arr : Symbol(arr, Decl(indexFromEnd.ts, 2, 5))
+}
+const withSideEffects = getArr()[^1];
+>withSideEffects : Symbol(withSideEffects, Decl(indexFromEnd.ts, 55, 5))
+>getArr : Symbol(getArr, Decl(indexFromEnd.ts, 50, 14))
+
+// Emit - optional chaining should preserve short-circuiting and still evaluate base once
+let optionalCalls = 0;
+>optionalCalls : Symbol(optionalCalls, Decl(indexFromEnd.ts, 58, 3))
+
+function getOptionalArr(): number[] | undefined {
+>getOptionalArr : Symbol(getOptionalArr, Decl(indexFromEnd.ts, 58, 22))
+
+    optionalCalls++;
+>optionalCalls : Symbol(optionalCalls, Decl(indexFromEnd.ts, 58, 3))
+
+    return optionalCalls % 2 ? arr : undefined;
+>optionalCalls : Symbol(optionalCalls, Decl(indexFromEnd.ts, 58, 3))
+>arr : Symbol(arr, Decl(indexFromEnd.ts, 2, 5))
+>undefined : Symbol(undefined)
+}
+const optionalWithSideEffects = getOptionalArr()?.[^1];
+>optionalWithSideEffects : Symbol(optionalWithSideEffects, Decl(indexFromEnd.ts, 63, 5))
+>getOptionalArr : Symbol(getOptionalArr, Decl(indexFromEnd.ts, 58, 22))
 
