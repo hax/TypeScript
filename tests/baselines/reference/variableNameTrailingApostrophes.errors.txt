@@ -1,228 +1,41 @@
-variableNameTrailingApostrophes.ts(1,5): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(2,5): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(2,6): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(2,16): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(3,7): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(3,7): error TS7005: Variable 'x' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(3,8): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(3,8): error TS2364: The left-hand side of an assignment expression must be a variable or a property access.
-variableNameTrailingApostrophes.ts(3,14): error TS1005: ';' expected.
-variableNameTrailingApostrophes.ts(3,20): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(4,5): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(4,6): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(4,8): error TS1005: ';' expected.
-variableNameTrailingApostrophes.ts(4,14): error TS1005: ';' expected.
-variableNameTrailingApostrophes.ts(4,20): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(6,7): error TS7005: Variable 'y' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(6,8): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(6,8): error TS2349: This expression is not callable.
-  Type 'String' has no call signatures.
-variableNameTrailingApostrophes.ts(6,13): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(7,13): error TS2550: Property 'dispose' does not exist on type 'SymbolConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'esnext' or later.
-variableNameTrailingApostrophes.ts(7,24): error TS1005: ';' expected.
-variableNameTrailingApostrophes.ts(7,26): error TS1128: Declaration or statement expected.
-variableNameTrailingApostrophes.ts(8,1): error TS1128: Declaration or statement expected.
-variableNameTrailingApostrophes.ts(10,7): error TS7022: 'o1' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-variableNameTrailingApostrophes.ts(10,15): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(10,69): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(11,1): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(11,1): error TS2448: Block-scoped variable 'o1' used before its declaration.
-variableNameTrailingApostrophes.ts(11,15): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(13,7): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(13,7): error TS2304: Cannot find name 'o2'.
 variableNameTrailingApostrophes.ts(13,15): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(13,20): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(13,22): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(13,26): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(14,1): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(14,1): error TS18004: No value exists in scope for the shorthand property 'o2'. Either declare one or provide an initializer.
-variableNameTrailingApostrophes.ts(14,3): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(14,15): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(16,1): error TS2448: Block-scoped variable 'let' used before its declaration.
-variableNameTrailingApostrophes.ts(16,5): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(16,7): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(16,7): error TS7031: Binding element 'x' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(16,8): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(16,72): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(17,1): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(17,1): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(17,1): error TS7031: Binding element 'x' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(17,2): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(17,14): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(19,1): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(19,1): error TS7031: Binding element 'let' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(19,5): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(19,10): error TS2451: Cannot redeclare block-scoped variable 'x'.
-variableNameTrailingApostrophes.ts(19,11): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(19,13): error TS2451: Cannot redeclare block-scoped variable '(Missing)'.
-variableNameTrailingApostrophes.ts(19,13): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(19,15): error TS2451: Cannot redeclare block-scoped variable '(Missing)'.
-variableNameTrailingApostrophes.ts(19,16): error TS1005: ':' expected.
-variableNameTrailingApostrophes.ts(20,1): error TS1434: Unexpected keyword or identifier.
-variableNameTrailingApostrophes.ts(20,4): error TS1005: ';' expected.
-variableNameTrailingApostrophes.ts(20,7): error TS2551: Property 'toFixed' does not exist on type '""'. Did you mean 'fixed'?
-variableNameTrailingApostrophes.ts(24,5): error TS1434: Unexpected keyword or identifier.
-variableNameTrailingApostrophes.ts(24,5): error TS2300: Duplicate identifier 'method'.
-variableNameTrailingApostrophes.ts(24,5): error TS2564: Property 'method' has no initializer and is not definitely assigned in the constructor.
-variableNameTrailingApostrophes.ts(24,5): error TS2717: Subsequent property declarations must have the same type.  Property 'method' must be of type '() => void', but here has type 'any'.
-variableNameTrailingApostrophes.ts(24,11): error TS7008: Member ''() {} // should error' implicitly has an 'any' type.
-variableNameTrailingApostrophes.ts(24,33): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(28,5): error TS18004: No value exists in scope for the shorthand property 'method'. Either declare one or provide an initializer.
-variableNameTrailingApostrophes.ts(28,11): error TS1005: ',' expected.
-variableNameTrailingApostrophes.ts(28,34): error TS1002: Unterminated string literal.
-variableNameTrailingApostrophes.ts(29,1): error TS1005: ':' expected.
+variableNameTrailingApostrophes.ts(26,5): error TS1434: Unexpected keyword or identifier.
+variableNameTrailingApostrophes.ts(26,5): error TS2300: Duplicate identifier 'method'.
+variableNameTrailingApostrophes.ts(26,5): error TS2564: Property 'method' has no initializer and is not definitely assigned in the constructor.
+variableNameTrailingApostrophes.ts(26,5): error TS2717: Subsequent property declarations must have the same type.  Property 'method' must be of type '() => void', but here has type 'any'.
+variableNameTrailingApostrophes.ts(26,11): error TS7008: Member ''() {} // should error' implicitly has an 'any' type.
+variableNameTrailingApostrophes.ts(26,33): error TS1002: Unterminated string literal.
+variableNameTrailingApostrophes.ts(30,5): error TS18004: No value exists in scope for the shorthand property 'method'. Either declare one or provide an initializer.
+variableNameTrailingApostrophes.ts(30,11): error TS1005: ',' expected.
+variableNameTrailingApostrophes.ts(30,34): error TS1002: Unterminated string literal.
+variableNameTrailingApostrophes.ts(31,1): error TS1005: ':' expected.
 
 
-==== variableNameTrailingApostrophes.ts (72 errors) ====
+==== variableNameTrailingApostrophes.ts (11 errors) ====
     let x = 1;
-        ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
     let x' = x + 2;
-        ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-         ~~~~~~~~~~
-!!! error TS1005: ',' expected.
-                   
-!!! error TS1002: Unterminated string literal.
     const x'' = x' + 1;
-          ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-          ~
-!!! error TS7005: Variable 'x' implicitly has an 'any' type.
-           ~~
-!!! error TS1005: ',' expected.
-           ~~
-!!! error TS2364: The left-hand side of an assignment expression must be a variable or a property access.
-                 ~~~~~~
-!!! error TS1005: ';' expected.
-                       
-!!! error TS1002: Unterminated string literal.
     var x''' = x'' + 1;
-        ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-         ~~
-!!! error TS1005: ',' expected.
-           ~~~~~~
-!!! error TS1005: ';' expected.
-                 ~~~~~~
-!!! error TS1005: ';' expected.
-                       
-!!! error TS1002: Unterminated string literal.
     
     using y' = {
-          ~
-!!! error TS7005: Variable 'y' implicitly has an 'any' type.
-           ~~~~~
-!!! error TS1005: ',' expected.
-           ~~~~~
-                
-!!! error TS1002: Unterminated string literal.
         [Symbol.dispose]() {},
-    ~~~~~~~~~~~~~~~~~~~~
-!!! error TS2349: This expression is not callable.
-!!! error TS2349:   Type 'String' has no call signatures.
-                ~~~~~~~
-!!! error TS2550: Property 'dispose' does not exist on type 'SymbolConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'esnext' or later.
-                           ~
-!!! error TS1005: ';' expected.
-                             ~
-!!! error TS1128: Declaration or statement expected.
     };
-    ~
-!!! error TS1128: Declaration or statement expected.
     
     const o1 = { x' }; // property shorthand strips trailing apostrophes
-          ~~
-!!! error TS7022: 'o1' implicitly has type 'any' because it does not have a type annotation and is referenced directly or indirectly in its own initializer.
-                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!!! error TS1005: ',' expected.
-                                                                        
-!!! error TS1002: Unterminated string literal.
     o1.x.toFixed();
-    ~~
-!!! error TS1005: ':' expected.
-    ~~
-!!! error TS2448: Block-scoped variable 'o1' used before its declaration.
-!!! related TS2728 variableNameTrailingApostrophes.ts:10:7: 'o1' is declared here.
-                  ~
-!!! error TS1005: ',' expected.
     
     const o2 = { x'': x''' };
-          ~~
-!!! error TS1005: ':' expected.
-          ~~
-!!! error TS2304: Cannot find name 'o2'.
                   ~~
 !!! error TS1005: ',' expected.
-                       ~~
-!!! error TS1005: ',' expected.
-                         ~~~~
-!!! error TS1005: ':' expected.
-                             
-!!! error TS1002: Unterminated string literal.
     o2.x.toFixed();
-    ~~
-!!! error TS1005: ',' expected.
-    ~~
-!!! error TS18004: No value exists in scope for the shorthand property 'o2'. Either declare one or provide an initializer.
-      ~
-!!! error TS1005: ',' expected.
-                  ~
-!!! error TS1005: ',' expected.
     
-    let { x' } = o1; // destructuring shorthand strips trailing apostrophes
-    ~~~
-!!! error TS2448: Block-scoped variable 'let' used before its declaration.
-!!! related TS2728 variableNameTrailingApostrophes.ts:19:1: 'let' is declared here.
-        ~
-!!! error TS1005: ',' expected.
-          ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-          ~
-!!! error TS7031: Binding element 'x' implicitly has an 'any' type.
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-!!! error TS1005: ',' expected.
-                                                                           
-!!! error TS1002: Unterminated string literal.
-    x'.toFixed();
-    ~
-!!! error TS1005: ':' expected.
-    ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-    ~
-!!! error TS7031: Binding element 'x' implicitly has an 'any' type.
-     ~~~~~~~~~~~~
-!!! error TS1005: ',' expected.
-                 
-!!! error TS1002: Unterminated string literal.
+    {
+        let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+        x'.toFixed();
+    }
     
     let { x: x'''' } = o1;
-    ~~~
-!!! error TS1005: ':' expected.
-    ~~~
-!!! error TS7031: Binding element 'let' implicitly has an 'any' type.
-        ~
-!!! error TS1005: ',' expected.
-             ~
-!!! error TS2451: Cannot redeclare block-scoped variable 'x'.
-              ~~
-!!! error TS1005: ',' expected.
-                
-!!! error TS2451: Cannot redeclare block-scoped variable '(Missing)'.
-                ~~
-!!! error TS1005: ':' expected.
-                  
-!!! error TS2451: Cannot redeclare block-scoped variable '(Missing)'.
-                   ~
-!!! error TS1005: ':' expected.
     x''''.toFixed();
-    ~
-!!! error TS1434: Unexpected keyword or identifier.
-       ~~
-!!! error TS1005: ';' expected.
-          ~~~~~~~
-!!! error TS2551: Property 'toFixed' does not exist on type '""'. Did you mean 'fixed'?
-!!! related TS2728 lib.es2015.core.d.ts:--:--: 'fixed' is declared here.
     
     class C {
         method() {}
@@ -235,7 +48,7 @@ variableNameTrailingApostrophes.ts(29,1): error TS1005: ':' expected.
 !!! error TS2564: Property 'method' has no initializer and is not definitely assigned in the constructor.
         ~~~~~~
 !!! error TS2717: Subsequent property declarations must have the same type.  Property 'method' must be of type '() => void', but here has type 'any'.
-!!! related TS6203 variableNameTrailingApostrophes.ts:23:5: 'method' was also declared here.
+!!! related TS6203 variableNameTrailingApostrophes.ts:25:5: 'method' was also declared here.
               ~~~~~~~~~~~~~~~~~~~~~~
 !!! error TS7008: Member ''() {} // should error' implicitly has an 'any' type.
                                     
@@ -253,5 +66,4 @@ variableNameTrailingApostrophes.ts(29,1): error TS1005: ':' expected.
     };
     ~
 !!! error TS1005: ':' expected.
-    
     

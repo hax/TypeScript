@@ -38,10 +38,16 @@ OK!
 >   : ^^^
 
 HERE's A shouty thing
->HERE : any
->     : ^^^
->'s A shouty thing : "s A shouty thing"
->                  : ^^^^^^^^^^^^^^^^^^
+>HERE' : any
+>      : ^^^
+>s : any
+>  : ^^^
+>A : any
+>  : ^^^
+>shouty : any
+>       : ^^^
+>thing : any
+>      : ^^^
 
 GOTTA GO FAST
 >GOTTA : any

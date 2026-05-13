@@ -16,8 +16,10 @@ o1.x.toFixed();
 const o2 = { x'': x''' };
 o2.x.toFixed();
 
-let { x' } = o1; // destructuring shorthand strips trailing apostrophes
-x'.toFixed();
+{
+    let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+    x'.toFixed();
+}
 
 let { x: x'''' } = o1;
 x''''.toFixed();
@@ -30,7 +32,6 @@ class C {
 const obj = {
     method'() {}, // should error
 };
-
 
 
 //// [variableNameTrailingApostrophes.js]
@@ -88,29 +89,25 @@ var __disposeResources = (this && this.__disposeResources) || (function (Suppres
     return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
 });
 let x = 1;
-let x;
-' = x + 2;;
-const x;
-'' = x;
-' + 1;;
-var x;
-'';
-' = x';
-' + 1;;
-var y, o1, x, x, let, x, , , C, obj;
+let x' = x + 2;
+const x'' = x' + 1;
+var x''' = x'' + 1;
+var y', o1, o2, x'''', C, obj;
 const env_1 = { stack: [], error: void 0, hasError: false };
 try {
-    y = __addDisposableResource(env_1, void 0, false);
-    ' = {[Symbol.dispose]();
-    { }
-    ;
-    o1 = { x, ' }; // property shorthand strips trailing apostrophes: o1.x.toFixed(),
-        const: o2 = { x, '': x, '': ' };,
-            o2, : .x.toFixed(),
-            let } }, { x: x, '': , '':  } = o1;
-    x;
-    '';
-    ''.toFixed();
+    y' = __addDisposableResource(env_1, {
+        [Symbol.dispose]() { },
+    }, false);
+    o1 = { x: x' }; // property shorthand strips trailing apostrophes
+    o1.x.toFixed();
+    o2 = { x, '': x''' };
+    o2.x.toFixed();
+    {
+        let { x: x' } = o1; // destructuring shorthand strips trailing apostrophes
+        x'.toFixed();
+    }
+    ({ x: x'''' } = o1);
+    x''''.toFixed();
     C = class C {
         method() { }
         method;

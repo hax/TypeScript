@@ -1,4 +1,5 @@
 // @target: es2022
+// @lib: es2022,esnext.disposable
 // @strict: true
 
 let x = 1;
@@ -16,8 +17,10 @@ o1.x.toFixed();
 const o2 = { x'': x''' };
 o2.x.toFixed();
 
-let { x' } = o1; // destructuring shorthand strips trailing apostrophes
-x'.toFixed();
+{
+    let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+    x'.toFixed();
+}
 
 let { x: x'''' } = o1;
 x''''.toFixed();
@@ -30,4 +33,3 @@ class C {
 const obj = {
     method'() {}, // should error
 };
-
