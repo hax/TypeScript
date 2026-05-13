@@ -79,7 +79,7 @@ o1.x.toFixed();
 >toFixed : (fractionDigits?: number) => string
 >        : ^              ^^^      ^^^^^      
 
-const o2 = { x'': x''' };
+const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
 >o2 : { x: number; '': number; }
 >   : ^^^^^^^^^^^^^^^^^^^^^^^^^^
 >{ x'': x''' } : { x: number; '': number; }

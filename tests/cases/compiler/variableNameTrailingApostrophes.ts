@@ -14,7 +14,7 @@ using y' = {
 const o1 = { x' }; // property shorthand strips trailing apostrophes
 o1.x.toFixed();
 
-const o2 = { x'': x''' };
+const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
 o2.x.toFixed();
 
 {

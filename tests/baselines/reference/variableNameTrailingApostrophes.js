@@ -13,7 +13,7 @@ using y' = {
 const o1 = { x' }; // property shorthand strips trailing apostrophes
 o1.x.toFixed();
 
-const o2 = { x'': x''' };
+const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
 o2.x.toFixed();
 
 {
@@ -100,7 +100,7 @@ try {
     }, false);
     o1 = { x: x' }; // property shorthand strips trailing apostrophes
     o1.x.toFixed();
-    o2 = { x, '': x''' };
+    o2 = { x, '': x''' }; // should error (apostrophes are not allowed in non-binding property names)
     o2.x.toFixed();
     {
         let { x: x' } = o1; // destructuring shorthand strips trailing apostrophes

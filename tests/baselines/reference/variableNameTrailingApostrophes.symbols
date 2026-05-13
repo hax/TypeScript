@@ -39,7 +39,7 @@ o1.x.toFixed();
 >x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
 >toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
 
-const o2 = { x'': x''' };
+const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
 >o2 : Symbol(o2, Decl(variableNameTrailingApostrophes.ts, 12, 5))
 >x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 12, 12))
 >'' : Symbol('', Decl(variableNameTrailingApostrophes.ts, 12, 14))
