@@ -91,9 +91,10 @@ export function assertInvariants(node: ts.Node | undefined, parent: ts.Node | un
 
             // Make sure each of the children is in order.
             let currentPos = 0;
+            const allowOverlappingChildren = node.kind === ts.SyntaxKind.PropertyAssignment || node.kind === ts.SyntaxKind.BindingElement;
             ts.forEachChild(node, child => {
                 assert.isFalse(child.pos < currentPos, "child.pos < currentPos");
-                currentPos = child.end;
+                currentPos = allowOverlappingChildren ? child.pos : child.end;
             }, array => {
                 assert.isFalse(array.pos < node.pos, "array.pos < node.pos");
                 assert.isFalse(array.end > node.end, "array.end > node.end");
