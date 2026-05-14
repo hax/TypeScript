@@ -2643,6 +2643,25 @@ namespace Parser {
         return identifier;
     }
 
+    function stripTrailingApostrophes(text: string) {
+        let end = text.length;
+        while (end > 0 && text.charAt(end - 1) === "'") {
+            end--;
+        }
+        return end === text.length ? text : text.slice(0, end);
+    }
+
+    function trimTrailingApostrophesEnd(end: number) {
+        while (end > 0 && sourceText.charAt(end - 1) === "'") {
+            end--;
+        }
+        return end;
+    }
+
+    function reScanIdentifierOrKeywordWithTrailingApostrophes() {
+        (scanner as any).reScanIdentifierOrKeywordWithTrailingApostrophes?.();
+    }
+
     // An identifier that starts with two underscores has an extra underscore character prepended to it to avoid issues
     // with magic property names like '__proto__'. The 'identifiers' object is used to share a single string instance for
     // each identifier in order to reduce memory consumption.
@@ -2683,10 +2702,12 @@ namespace Parser {
     }
 
     function parseBindingIdentifier(privateIdentifierDiagnosticMessage?: DiagnosticMessage) {
+        reScanIdentifierOrKeywordWithTrailingApostrophes();
         return createIdentifier(isBindingIdentifier(), /*diagnosticMessage*/ undefined, privateIdentifierDiagnosticMessage);
     }
 
     function parseIdentifier(diagnosticMessage?: DiagnosticMessage, privateIdentifierDiagnosticMessage?: DiagnosticMessage): Identifier {
+        reScanIdentifierOrKeywordWithTrailingApostrophes();
         return createIdentifier(isIdentifier(), diagnosticMessage, privateIdentifierDiagnosticMessage);
     }
 
@@ -6727,7 +6748,13 @@ namespace Parser {
 
         const asteriskToken = parseOptionalToken(SyntaxKind.AsteriskToken);
         const tokenIsIdentifier = isIdentifier();
-        const name = parsePropertyName();
+        const isShorthandIdentifier = !asteriskToken && tokenIsIdentifier && lookAhead(() => {
+            parseIdentifier();
+            return token() !== SyntaxKind.ColonToken
+                && token() !== SyntaxKind.OpenParenToken
+                && token() !== SyntaxKind.LessThanToken;
+        });
+        const name = isShorthandIdentifier ? parseIdentifier() : parsePropertyName();
 
         // Disallowing of optional property assignments and definite assignment assertion happens in the grammar checker.
         const questionToken = parseOptionalToken(SyntaxKind.QuestionToken);
@@ -6747,10 +6774,21 @@ namespace Parser {
         if (isShorthandPropertyAssignment) {
             const equalsToken = parseOptionalToken(SyntaxKind.EqualsToken);
             const objectAssignmentInitializer = equalsToken ? allowInAnd(() => parseAssignmentExpressionOrHigher(/*allowReturnTypeInArrowFunction*/ true)) : undefined;
-            node = factory.createShorthandPropertyAssignment(name as Identifier, objectAssignmentInitializer);
-            // Save equals token for error reporting.
-            // TODO(rbuckton): Consider manufacturing this when we need to report an error as it is otherwise not useful.
-            node.equalsToken = equalsToken;
+            const shorthandName = name as Identifier;
+            const text = shorthandName.escapedText as string;
+            const strippedText = stripTrailingApostrophes(text);
+            if (strippedText !== text) {
+                const propertyNameEnd = trimTrailingApostrophesEnd(shorthandName.end);
+                const propertyName = finishNode(factoryCreateIdentifier(internIdentifier(strippedText), /*originalKeywordKind*/ undefined), shorthandName.pos, propertyNameEnd);
+                const initializer = equalsToken && objectAssignmentInitializer ? factory.createAssignment(shorthandName, objectAssignmentInitializer) : shorthandName;
+                node = factory.createPropertyAssignment(propertyName, initializer);
+            }
+            else {
+                node = factory.createShorthandPropertyAssignment(shorthandName, objectAssignmentInitializer);
+                // Save equals token for error reporting.
+                // TODO(rbuckton): Consider manufacturing this when we need to report an error as it is otherwise not useful.
+                node.equalsToken = equalsToken;
+            }
         }
         else {
             parseExpected(SyntaxKind.ColonToken);
@@ -7607,6 +7645,33 @@ namespace Parser {
         const pos = getNodePos();
         const dotDotDotToken = parseOptionalToken(SyntaxKind.DotDotDotToken);
         const tokenIsIdentifier = isBindingIdentifier();
+
+        if (
+            dotDotDotToken && tokenIsIdentifier && lookAhead(() => {
+                parseBindingIdentifier();
+                return token() !== SyntaxKind.ColonToken;
+            })
+        ) {
+            const name = parseBindingIdentifier();
+            const initializer = parseInitializer();
+            return finishNode(factory.createBindingElement(dotDotDotToken, /*propertyName*/ undefined, name, initializer), pos);
+        }
+
+        if (
+            !dotDotDotToken && tokenIsIdentifier && lookAhead(() => {
+                const name = parseBindingIdentifier();
+                return token() !== SyntaxKind.ColonToken && trimTrailingApostrophesEnd(name.end) !== name.end;
+            })
+        ) {
+            const name = parseBindingIdentifier();
+            const text = name.escapedText as string;
+            const strippedText = stripTrailingApostrophes(text);
+            const propertyNameEnd = trimTrailingApostrophesEnd(name.end);
+            const propertyName = finishNode(factoryCreateIdentifier(internIdentifier(strippedText), /*originalKeywordKind*/ undefined), name.pos, propertyNameEnd);
+            const initializer = parseInitializer();
+            return finishNode(factory.createBindingElement(dotDotDotToken, propertyName, name, initializer), pos);
+        }
+
         let propertyName: PropertyName | undefined = parsePropertyName();
         let name: BindingName;
         if (tokenIsIdentifier && token() !== SyntaxKind.ColonToken) {

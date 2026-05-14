@@ -1,0 +1,96 @@
+//// [tests/cases/compiler/variableNameTrailingApostrophes.ts] ////
+
+=== variableNameTrailingApostrophes.ts ===
+let x = 1;
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 0, 3))
+
+let x' = x + 2;
+>x' : Symbol(x', Decl(variableNameTrailingApostrophes.ts, 1, 3))
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 0, 3))
+
+const x'' = x' + 1;
+>x'' : Symbol(x'', Decl(variableNameTrailingApostrophes.ts, 2, 5))
+>x' : Symbol(x', Decl(variableNameTrailingApostrophes.ts, 1, 3))
+
+var x''' = x'' + 1;
+>x''' : Symbol(x''', Decl(variableNameTrailingApostrophes.ts, 3, 3))
+>x'' : Symbol(x'', Decl(variableNameTrailingApostrophes.ts, 2, 5))
+
+using y' = {
+>y' : Symbol(y', Decl(variableNameTrailingApostrophes.ts, 5, 5))
+
+    [Symbol.dispose]() {},
+>[Symbol.dispose] : Symbol([Symbol.dispose], Decl(variableNameTrailingApostrophes.ts, 5, 12))
+>Symbol.dispose : Symbol(SymbolConstructor.dispose, Decl(lib.esnext.disposable.d.ts, --, --))
+>Symbol : Symbol(Symbol, Decl(lib.es5.d.ts, --, --), Decl(lib.es2015.symbol.d.ts, --, --), Decl(lib.es2015.symbol.wellknown.d.ts, --, --), Decl(lib.es2019.symbol.d.ts, --, --))
+>dispose : Symbol(SymbolConstructor.dispose, Decl(lib.esnext.disposable.d.ts, --, --))
+
+};
+
+const o1 = { x' }; // property shorthand strips trailing apostrophes
+>o1 : Symbol(o1, Decl(variableNameTrailingApostrophes.ts, 9, 5))
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
+>x' : Symbol(x', Decl(variableNameTrailingApostrophes.ts, 1, 3))
+
+o1.x.toFixed();
+>o1.x.toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+>o1.x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
+>o1 : Symbol(o1, Decl(variableNameTrailingApostrophes.ts, 9, 5))
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
+>toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+
+const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
+>o2 : Symbol(o2, Decl(variableNameTrailingApostrophes.ts, 12, 5))
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 12, 12))
+>'' : Symbol('', Decl(variableNameTrailingApostrophes.ts, 12, 14))
+>x''' : Symbol(x''', Decl(variableNameTrailingApostrophes.ts, 3, 3))
+
+o2.x.toFixed();
+>o2.x.toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+>o2.x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 12, 12))
+>o2 : Symbol(o2, Decl(variableNameTrailingApostrophes.ts, 12, 5))
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 12, 12))
+>toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+
+{
+    let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
+>x' : Symbol(x', Decl(variableNameTrailingApostrophes.ts, 16, 9))
+>o1 : Symbol(o1, Decl(variableNameTrailingApostrophes.ts, 9, 5))
+
+    x'.toFixed();
+>x'.toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+>x' : Symbol(x', Decl(variableNameTrailingApostrophes.ts, 16, 9))
+>toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+}
+
+let { x: x'''' } = o1;
+>x : Symbol(x, Decl(variableNameTrailingApostrophes.ts, 9, 12))
+>x'''' : Symbol(x'''', Decl(variableNameTrailingApostrophes.ts, 20, 5))
+>o1 : Symbol(o1, Decl(variableNameTrailingApostrophes.ts, 9, 5))
+
+x''''.toFixed();
+>x''''.toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+>x'''' : Symbol(x'''', Decl(variableNameTrailingApostrophes.ts, 20, 5))
+>toFixed : Symbol(Number.toFixed, Decl(lib.es5.d.ts, --, --))
+
+class C {
+>C : Symbol(C, Decl(variableNameTrailingApostrophes.ts, 21, 16))
+
+    method() {}
+>method : Symbol(C.method, Decl(variableNameTrailingApostrophes.ts, 23, 9), Decl(variableNameTrailingApostrophes.ts, 24, 15))
+
+    method'() {} // should error
+>method : Symbol(C.method, Decl(variableNameTrailingApostrophes.ts, 23, 9), Decl(variableNameTrailingApostrophes.ts, 24, 15))
+>'() {} // should error : Symbol(C['\'() {} // should error'], Decl(variableNameTrailingApostrophes.ts, 25, 10))
+}
+
+const obj = {
+>obj : Symbol(obj, Decl(variableNameTrailingApostrophes.ts, 28, 5))
+
+    method'() {}, // should error
+>method : Symbol(method, Decl(variableNameTrailingApostrophes.ts, 28, 13))
+>'() {}, // should error : Symbol('() {}, // should error, Decl(variableNameTrailingApostrophes.ts, 29, 10))
+
+};
+

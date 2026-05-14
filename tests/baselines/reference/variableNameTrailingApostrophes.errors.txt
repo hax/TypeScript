@@ -1,0 +1,69 @@
+variableNameTrailingApostrophes.ts(13,15): error TS1005: ',' expected.
+variableNameTrailingApostrophes.ts(26,5): error TS1434: Unexpected keyword or identifier.
+variableNameTrailingApostrophes.ts(26,5): error TS2300: Duplicate identifier 'method'.
+variableNameTrailingApostrophes.ts(26,5): error TS2564: Property 'method' has no initializer and is not definitely assigned in the constructor.
+variableNameTrailingApostrophes.ts(26,5): error TS2717: Subsequent property declarations must have the same type.  Property 'method' must be of type '() => void', but here has type 'any'.
+variableNameTrailingApostrophes.ts(26,11): error TS7008: Member ''() {} // should error' implicitly has an 'any' type.
+variableNameTrailingApostrophes.ts(26,33): error TS1002: Unterminated string literal.
+variableNameTrailingApostrophes.ts(30,5): error TS18004: No value exists in scope for the shorthand property 'method'. Either declare one or provide an initializer.
+variableNameTrailingApostrophes.ts(30,11): error TS1005: ',' expected.
+variableNameTrailingApostrophes.ts(30,34): error TS1002: Unterminated string literal.
+variableNameTrailingApostrophes.ts(31,1): error TS1005: ':' expected.
+
+
+==== variableNameTrailingApostrophes.ts (11 errors) ====
+    let x = 1;
+    let x' = x + 2;
+    const x'' = x' + 1;
+    var x''' = x'' + 1;
+    
+    using y' = {
+        [Symbol.dispose]() {},
+    };
+    
+    const o1 = { x' }; // property shorthand strips trailing apostrophes
+    o1.x.toFixed();
+    
+    const o2 = { x'': x''' }; // should error (apostrophes are not allowed in non-binding property names)
+                  ~~
+!!! error TS1005: ',' expected.
+    o2.x.toFixed();
+    
+    {
+        let { x' } = o1; // destructuring shorthand strips trailing apostrophes
+        x'.toFixed();
+    }
+    
+    let { x: x'''' } = o1;
+    x''''.toFixed();
+    
+    class C {
+        method() {}
+        method'() {} // should error
+        ~~~~~~
+!!! error TS1434: Unexpected keyword or identifier.
+        ~~~~~~
+!!! error TS2300: Duplicate identifier 'method'.
+        ~~~~~~
+!!! error TS2564: Property 'method' has no initializer and is not definitely assigned in the constructor.
+        ~~~~~~
+!!! error TS2717: Subsequent property declarations must have the same type.  Property 'method' must be of type '() => void', but here has type 'any'.
+!!! related TS6203 variableNameTrailingApostrophes.ts:25:5: 'method' was also declared here.
+              ~~~~~~~~~~~~~~~~~~~~~~
+!!! error TS7008: Member ''() {} // should error' implicitly has an 'any' type.
+                                    
+!!! error TS1002: Unterminated string literal.
+    }
+    
+    const obj = {
+        method'() {}, // should error
+        ~~~~~~
+!!! error TS18004: No value exists in scope for the shorthand property 'method'. Either declare one or provide an initializer.
+              ~~~~~~~~~~~~~~~~~~~~~~~
+!!! error TS1005: ',' expected.
+                                     
+!!! error TS1002: Unterminated string literal.
+    };
+    ~
+!!! error TS1005: ':' expected.
+    

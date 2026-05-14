@@ -1121,6 +1121,8 @@ export function createScanner(
         });
     }
 
+    (scanner as any).reScanIdentifierOrKeywordWithTrailingApostrophes = reScanIdentifierOrKeywordWithTrailingApostrophes;
+
     return scanner;
 
     /**
@@ -2420,6 +2422,17 @@ export function createScanner(
         }
         pos += charSize(ch);
         return token; // Still `SyntaxKind.Unknown`
+    }
+
+    function reScanIdentifierOrKeywordWithTrailingApostrophes(): SyntaxKind {
+        if (!tokenIsIdentifierOrKeyword(token)) return token;
+        const startPos = pos;
+        while (pos < end && charCodeUnchecked(pos) === CharacterCodes.singleQuote) pos++;
+        if (pos !== startPos) {
+            tokenValue = text.substring(tokenStart, pos);
+            return token = SyntaxKind.Identifier;
+        }
+        return token;
     }
 
     function scanIdentifier(startCharacter: number, languageVersion: ScriptTarget) {

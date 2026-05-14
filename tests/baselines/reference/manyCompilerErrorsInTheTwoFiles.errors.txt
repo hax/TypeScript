@@ -30,18 +30,43 @@
 
 [7m3[0m OK!
 [7m [0m [91m~~[0m
-[96ma.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS1434: [0mUnexpected keyword or identifier.
+[96ma.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS2304: [0mCannot find name 'HERE''.
 
 [7m4[0m HERE's A shouty thing
-[7m [0m [91m~~~~[0m
-[96ma.ts[0m:[93m4[0m:[93m1[0m - [91merror[0m[90m TS2304: [0mCannot find name 'HERE'.
+[7m [0m [91m~~~~~[0m
+[96ma.ts[0m:[93m4[0m:[93m6[0m - [91merror[0m[90m TS1005: [0m';' expected.
 
 [7m4[0m HERE's A shouty thing
-[7m [0m [91m~~~~[0m
-[96ma.ts[0m:[93m4[0m:[93m22[0m - [91merror[0m[90m TS1002: [0mUnterminated string literal.
+[7m [0m [91m     ~[0m
+[96ma.ts[0m:[93m4[0m:[93m6[0m - [91merror[0m[90m TS2304: [0mCannot find name 's'.
 
 [7m4[0m HERE's A shouty thing
-[7m [0m [91m                     [0m
+[7m [0m [91m     ~[0m
+[96ma.ts[0m:[93m4[0m:[93m8[0m - [91merror[0m[90m TS1434: [0mUnexpected keyword or identifier.
+
+[7m4[0m HERE's A shouty thing
+[7m [0m [91m       ~[0m
+[96ma.ts[0m:[93m4[0m:[93m8[0m - [91merror[0m[90m TS2552: [0mCannot find name 'A'. Did you mean 'a'?
+
+[7m4[0m HERE's A shouty thing
+[7m [0m [91m       ~[0m
+
+  [96ma.ts[0m:[93m1[0m:[93m7[0m
+    [7m1[0m const a =!@#!@$
+    [7m [0m [96m      ~[0m
+    'a' is declared here.
+[96ma.ts[0m:[93m4[0m:[93m10[0m - [91merror[0m[90m TS1434: [0mUnexpected keyword or identifier.
+
+[7m4[0m HERE's A shouty thing
+[7m [0m [91m         ~~~~~~[0m
+[96ma.ts[0m:[93m4[0m:[93m10[0m - [91merror[0m[90m TS2304: [0mCannot find name 'shouty'.
+
+[7m4[0m HERE's A shouty thing
+[7m [0m [91m         ~~~~~~[0m
+[96ma.ts[0m:[93m4[0m:[93m17[0m - [91merror[0m[90m TS2304: [0mCannot find name 'thing'.
+
+[7m4[0m HERE's A shouty thing
+[7m [0m [91m                ~~~~~[0m
 [96ma.ts[0m:[93m5[0m:[93m1[0m - [91merror[0m[90m TS1434: [0mUnexpected keyword or identifier.
 
 [7m5[0m GOTTA GO FAST
@@ -76,7 +101,7 @@
 [7m [0m [91m~~~~~[0m
 
 
-==== a.ts (16 errors) ====
+==== a.ts (21 errors) ====
     const a =!@#!@$
                ~~
 !!! error TS18026: '#!' can only be used at the start of a file.
@@ -97,12 +122,23 @@
     ~~
 !!! error TS2304: Cannot find name 'OK'.
     HERE's A shouty thing
-    ~~~~
+    ~~~~~
+!!! error TS2304: Cannot find name 'HERE''.
+         ~
+!!! error TS1005: ';' expected.
+         ~
+!!! error TS2304: Cannot find name 's'.
+           ~
 !!! error TS1434: Unexpected keyword or identifier.
-    ~~~~
-!!! error TS2304: Cannot find name 'HERE'.
-                         
-!!! error TS1002: Unterminated string literal.
+           ~
+!!! error TS2552: Cannot find name 'A'. Did you mean 'a'?
+!!! related TS2728 a.ts:1:7: 'a' is declared here.
+             ~~~~~~
+!!! error TS1434: Unexpected keyword or identifier.
+             ~~~~~~
+!!! error TS2304: Cannot find name 'shouty'.
+                    ~~~~~
+!!! error TS2304: Cannot find name 'thing'.
     GOTTA GO FAST
     ~~~~~
 !!! error TS1434: Unexpected keyword or identifier.
@@ -125,8 +161,8 @@
     limit
     ~~~~~
 !!! error TS2304: Cannot find name 'limit'.
-Found 19 errors in 2 files.
+Found 24 errors in 2 files.
 
 Errors  Files
-    16  a.ts[90m:1[0m
+    21  a.ts[90m:1[0m
      3  b.ts[90m:1[0m
