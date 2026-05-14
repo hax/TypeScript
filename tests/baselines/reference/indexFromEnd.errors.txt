@@ -1,0 +1,74 @@
+indexFromEnd.ts(29,22): error TS18062: Index from end operator requires an operand of type 'number'.
+indexFromEnd.ts(36,23): error TS18063: Index from end operator can only be used with values that have a numeric 'length' property and support numeric indexing.
+
+
+==== indexFromEnd.ts (2 errors) ====
+    // Basic index-from-end syntax test
+    
+    const arr = [1, 2, 3, 4, 5];
+    
+    // Valid usage - simple identifier
+    const index = 1;
+    const last = arr[^index];  // Should be arr[arr.length - index]
+    
+    // Valid usage - literal
+    const secondLast = arr[^2];  // Should be arr[arr.length - 2]
+    
+    // Valid usage - expression with parentheses
+    const n = 1;
+    const m = 2;
+    const fromEnd = arr[^(n + m)];  // Should be arr[arr.length - (n + m)]
+    
+    // Valid usage - method call
+    function getIndex(): number {
+        return 1;
+    }
+    const withMethod = arr[^getIndex()];
+    
+    // Valid usage - property access
+    const obj = { idx: 1 };
+    const withProperty = arr[^obj.idx];
+    
+    // Type checking - should error for non-number
+    const str = "1";
+    const invalid = arr[^str];  // Error: Index from end operator requires an operand of type 'number'
+                         ~~~
+!!! error TS18062: Index from end operator requires an operand of type 'number'.
+    
+    // Type checking - should error for non-array-like targets
+    interface NumericIndexWithoutLength {
+        [n: number]: number;
+    }
+    declare const numericIndexWithoutLength: NumericIndexWithoutLength;
+    const invalidTarget = numericIndexWithoutLength[^1];  // Error: requires numeric length + numeric indexing
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~
+!!! error TS18063: Index from end operator can only be used with values that have a numeric 'length' property and support numeric indexing.
+    
+    // Should work with string arrays
+    const strArr = ["a", "b", "c"];
+    const lastStr = strArr[^1];
+    
+    // Should work with tuples
+    const tuple: [number, string, boolean] = [1, "test", true];
+    const lastInTuple = tuple[^1];
+    
+    // Should work with readonly arrays
+    const readonlyArr: readonly number[] = [1, 2, 3];
+    const lastReadonly = readonlyArr[^1];
+    
+    // Emit - base expression should only be evaluated once
+    let calls = 0;
+    function getArr() {
+        calls++;
+        return arr;
+    }
+    const withSideEffects = getArr()[^1];
+    
+    // Emit - optional chaining should preserve short-circuiting and still evaluate base once
+    let optionalCalls = 0;
+    function getOptionalArr(): number[] | undefined {
+        optionalCalls++;
+        return optionalCalls % 2 ? arr : undefined;
+    }
+    const optionalWithSideEffects = getOptionalArr()?.[^1];
+    

@@ -2950,14 +2950,19 @@ export function createNodeFactory(flags: NodeFactoryFlags, baseFactory: BaseNode
             : node;
     }
 
-    function createBaseElementAccessExpression(expression: LeftHandSideExpression, questionDotToken: QuestionDotToken | undefined, argumentExpression: Expression) {
+    function createBaseElementAccessExpression(expression: LeftHandSideExpression, questionDotToken: QuestionDotToken | undefined, caretToken: Token<SyntaxKind.CaretToken> | undefined, argumentExpression: Expression) {
         const node = createBaseDeclaration<ElementAccessExpression>(SyntaxKind.ElementAccessExpression);
         node.expression = expression;
         node.questionDotToken = questionDotToken;
+        node.caretToken = caretToken;
         node.argumentExpression = argumentExpression;
         node.transformFlags |= propagateChildFlags(node.expression) |
             propagateChildFlags(node.questionDotToken) |
+            propagateChildFlags(node.caretToken) |
             propagateChildFlags(node.argumentExpression);
+        if (caretToken) {
+            node.transformFlags |= TransformFlags.ContainsESNext;
+        }
 
         node.jsDoc = undefined; // initialized by parser (JsDocContainer)
         node.flowNode = undefined; // initialized by binder (FlowContainer)
@@ -2965,10 +2970,11 @@ export function createNodeFactory(flags: NodeFactoryFlags, baseFactory: BaseNode
     }
 
     // @api
-    function createElementAccessExpression(expression: Expression, index: number | Expression) {
+    function createElementAccessExpression(expression: Expression, index: number | Expression, caretToken?: Token<SyntaxKind.CaretToken>) {
         const node = createBaseElementAccessExpression(
             parenthesizerRules().parenthesizeLeftSideOfAccess(expression, /*optionalChain*/ false),
             /*questionDotToken*/ undefined,
+            caretToken,
             asExpression(index),
         );
         if (isSuperKeyword(expression)) {
@@ -2981,21 +2987,23 @@ export function createNodeFactory(flags: NodeFactoryFlags, baseFactory: BaseNode
     }
 
     // @api
-    function updateElementAccessExpression(node: ElementAccessExpression, expression: Expression, argumentExpression: Expression) {
+    function updateElementAccessExpression(node: ElementAccessExpression, expression: Expression, argumentExpression: Expression, caretToken = node.caretToken) {
         if (isElementAccessChain(node)) {
-            return updateElementAccessChain(node, expression, node.questionDotToken, argumentExpression);
+            return updateElementAccessChain(node, expression, node.questionDotToken, argumentExpression, caretToken);
         }
         return node.expression !== expression
+                || node.caretToken !== caretToken
                 || node.argumentExpression !== argumentExpression
-            ? update(createElementAccessExpression(expression, argumentExpression), node)
+            ? update(createElementAccessExpression(expression, argumentExpression, caretToken), node)
             : node;
     }
 
     // @api
-    function createElementAccessChain(expression: Expression, questionDotToken: QuestionDotToken | undefined, index: number | Expression) {
+    function createElementAccessChain(expression: Expression, questionDotToken: QuestionDotToken | undefined, index: number | Expression, caretToken?: Token<SyntaxKind.CaretToken>) {
         const node = createBaseElementAccessExpression(
             parenthesizerRules().parenthesizeLeftSideOfAccess(expression, /*optionalChain*/ true),
             questionDotToken,
+            caretToken,
             asExpression(index),
         ) as Mutable<ElementAccessChain>;
         node.flags |= NodeFlags.OptionalChain;
@@ -3004,14 +3012,15 @@ export function createNodeFactory(flags: NodeFactoryFlags, baseFactory: BaseNode
     }
 
     // @api
-    function updateElementAccessChain(node: ElementAccessChain, expression: Expression, questionDotToken: QuestionDotToken | undefined, argumentExpression: Expression) {
+    function updateElementAccessChain(node: ElementAccessChain, expression: Expression, questionDotToken: QuestionDotToken | undefined, argumentExpression: Expression, caretToken = node.caretToken) {
         Debug.assert(!!(node.flags & NodeFlags.OptionalChain), "Cannot update a ElementAccessExpression using updateElementAccessChain. Use updateElementAccess instead.");
         // Because we are updating an existing ElementAccessChain we want to inherit its emitFlags
         // instead of using the default from createElementAccess
         return node.expression !== expression
                 || node.questionDotToken !== questionDotToken
+                || node.caretToken !== caretToken
                 || node.argumentExpression !== argumentExpression
-            ? update(createElementAccessChain(expression, questionDotToken, argumentExpression), node)
+            ? update(createElementAccessChain(expression, questionDotToken, argumentExpression, caretToken), node)
             : node;
     }
 
